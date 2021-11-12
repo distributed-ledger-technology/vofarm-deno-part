@@ -1,5 +1,5 @@
 # VoFarm - Volatility Farming
-This module represents a bunch of VoFarm strategies and minor additional features.
+A peer 2 peer approach to increase price stability and to reduce price manipulation by exploiting non-fundamentals-based volatility.  
 
 ## Usage Examples
 ### Via Commandline
