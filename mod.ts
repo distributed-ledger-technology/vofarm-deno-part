@@ -6,3 +6,4 @@ export * from "./src/interfaces/investment-option.ts";
 export * from "./src/interfaces/logger.ts";
 export * from "./src/interfaces/persistence.ts";
 export * from "./src/interfaces/position.ts";
+export * from "./src/interfaces/vofarm-strategy.ts";
