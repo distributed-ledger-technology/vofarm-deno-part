@@ -3,7 +3,7 @@ A peer 2 peer approach to increase price stability and to reduce price manipulat
 
 Open Source Developers are invited to propose further strategies via Pull Requests.   
 
-## Usage Examples
+## Usage Examples Regarding Strategies Reuse
 ### Via Commandline
 ```sh
 deno run https://deno.land/x/vofarm/usage-example.ts
@@ -45,6 +45,10 @@ deno test https://deno.land/x/vofarm/src/long-short-exploit-strategy.spec.ts
 ```
 
 
+## Usage Examples Regarding Centralized Volatility Farming
+```sh
+deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> <yourmongodbuser> <yourmongodbpw> LongShortExploitStrategy BybitConnector MongoService <yourmongodbhostip> <yourmongodbport> VFLogger
+```
 
 ## Unit Tests
 For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)

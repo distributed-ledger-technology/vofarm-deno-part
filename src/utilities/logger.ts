@@ -1,8 +1,9 @@
-import { MongoService } from "./mongo-service.ts";
-import { LogSchema, IPersistenceService } from "../interfaces/persistence.ts";
+import { MongoService } from "./mongo-service.ts"
+import { LogSchema, IPersistenceService } from "../interfaces/persistence.ts"
+import { IVFLogger } from "../interfaces/logger.ts"
 
 
-export class VFLogger implements VFLogger {
+export class VFLogger implements IVFLogger {
 
     private apiKey: string = ""
     private persistenceService: IPersistenceService

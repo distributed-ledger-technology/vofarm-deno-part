@@ -1,5 +1,5 @@
 import { IPersistenceService } from "./persistence.ts";
 
-export interface VFLogger {
+export interface IVFLogger {
     log(message: string): Promise<void>
 }
