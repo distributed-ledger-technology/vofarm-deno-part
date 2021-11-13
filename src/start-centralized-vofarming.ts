@@ -22,14 +22,13 @@ const loggerClassName = (Deno.args[9] === undefined) ? 'VFLogger' : Deno.args[9]
 
 
 // Dependent On Components Handling
-const registryInvestmentAdvisors = new Registry()
+const registryVoFarmStrategies = new Registry()
 const registryExchangeConnectors = new Registry()
 const registryPersistenceServices = new Registry()
 const registryLoggerServices = new Registry()
 
 // registryInvestmentAdvisors.register(ETHLongWithHiddenOverallHedge)
-registryInvestmentAdvisors.register(LongShortExploitStrategy)
-registryInvestmentAdvisors.register(LongShortExploitStrategy)
+registryVoFarmStrategies.register(LongShortExploitStrategy)
 registryExchangeConnectors.register(BybitConnector)
 registryPersistenceServices.register(MongoService)
 registryLoggerServices.register(VFLogger)
@@ -37,10 +36,10 @@ registryLoggerServices.register(VFLogger)
 const exchangeConnector: IExchangeConnector = new (registryExchangeConnectors.get(exchangeConnectorClassName))(apiKey, apiSecret)
 const persistenceService: IPersistenceService = new (registryPersistenceServices.get(persistenceServiceClassName))(`mongodb://${dbUser}:${dbPW}@${persistenceHost}:${persistencePort}`)
 const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, persistenceService)
-const investmentAdvisor: VoFarmStrategy = new (registryInvestmentAdvisors.get(voFarmStrategyClassName))(vfLogger)
+const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
 
 // Dependency Injection via constructor injection
-const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(apiKey, exchangeConnector, investmentAdvisor, persistenceService, vfLogger)
+const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(apiKey, exchangeConnector, voFarmStrategies, persistenceService, vfLogger)
 
 
 // start farming interval - farming each 4 seconds

@@ -33,9 +33,9 @@ export class VolatilityFarmer {
 
 
 
-    public constructor(apiKey: string, private exchangeConnector: IExchangeConnector, private investmentAdvisor: VoFarmStrategy, private mongoService: IPersistenceService | undefined, private logger: IVFLogger) {
+    public constructor(apiKey: string, private exchangeConnector: IExchangeConnector, private voFarmStrategies: VoFarmStrategy, private mongoService: IPersistenceService | undefined, private logger: IVFLogger) {
 
-        this.pair = this.investmentAdvisor.getInvestmentOptions()[0].pair
+        this.pair = this.voFarmStrategies.getInvestmentOptions()[0].pair
 
         this.activeProcess = {
             apiKey,
@@ -62,7 +62,7 @@ export class VolatilityFarmer {
             stabilityPositionSize: 0,
             stabilityPositionPNL: 0,
             botStatus: 'active',
-            strategy: this.investmentAdvisor.constructor.name
+            strategy: this.voFarmStrategies.constructor.name
         }
 
     }
@@ -126,7 +126,7 @@ export class VolatilityFarmer {
         this.accountInfoCash.overallUnrealizedPNL = FinancialCalculator.getOverallPNLInPercent(longPosition, shortPosition)
         this.accountInfoCash.longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.positions, this.pair)
         const lsdV = FinancialCalculator.getLongShortDeltaValue(this.positions, this.pair)
-        this.accountInfoCash.strategy = this.investmentAdvisor.constructor.name
+        this.accountInfoCash.strategy = this.voFarmStrategies.constructor.name
         this.liquidityLevel = (this.accountInfo.result.USDT.available_balance / this.accountInfo.result.USDT.equity) * 20
 
         const message = `*********** equity: ${this.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(0)} - oPNL: ${this.accountInfoCash.overallUnrealizedPNL.toFixed(0)} - lsdV: ${lsdV.toFixed(0)} ***********`
@@ -145,7 +145,7 @@ export class VolatilityFarmer {
             positions: this.positions,
         }
 
-        return this.investmentAdvisor.getInvestmentAdvices(this.investmentDecisionBase)
+        return this.voFarmStrategies.getInvestmentAdvices(this.investmentDecisionBase)
 
     }
 

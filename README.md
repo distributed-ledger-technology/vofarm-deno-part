@@ -5,8 +5,13 @@ Open Source Developers are invited to propose further strategies via Pull Reques
 
 ## Usage Examples Regarding Strategies Reuse
 ### Via Commandline
+#### Simple
 ```sh
 deno run https://deno.land/x/vofarm/usage-example.ts
+```
+#### Advanced
+```sh
+deno run https://deno.land/x/vofarm/usage-example-with-persisted-log-entries.ts
 ```
 
 ### Via Your Own Code
@@ -52,5 +57,6 @@ deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourb
 
 ## Usage Examples Regarding Decentralized Volatility Farming
 ... under construction on Arbitrum ... 
+
 ## Unit Tests
 For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)
