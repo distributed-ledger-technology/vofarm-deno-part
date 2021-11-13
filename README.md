@@ -50,5 +50,7 @@ deno test https://deno.land/x/vofarm/src/long-short-exploit-strategy.spec.ts
 deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> <yourmongodbuser> <yourmongodbpw> LongShortExploitStrategy BybitConnector MongoService <yourmongodbhostip> <yourmongodbport> VFLogger
 ```
 
+## Usage Examples Regarding Decentralized Volatility Farming
+... under construction on Arbitrum ... 
 ## Unit Tests
 For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)
