@@ -3,9 +3,9 @@ import { IPersistenceService } from "./interfaces/persistence.ts"
 import { MongoService } from "./utilities/mongo-service.ts"
 import { VolatilityFarmer } from "./vofarmer.ts"
 import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
-import { LongShortExploitStrategy } from "./long-short-exploit-strategy.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
 import { VFLogger } from "./utilities/logger.ts"
+import { LongETHStrategy } from "./long-eth-strategy.ts"
 
 
 // get parameters
@@ -28,7 +28,7 @@ const registryPersistenceServices = new Registry()
 const registryLoggerServices = new Registry()
 
 // registryInvestmentAdvisors.register(ETHLongWithHiddenOverallHedge)
-registryVoFarmStrategies.register(LongShortExploitStrategy)
+registryVoFarmStrategies.register(LongETHStrategy)
 registryExchangeConnectors.register(BybitConnector)
 registryPersistenceServices.register(MongoService)
 registryLoggerServices.register(VFLogger)
