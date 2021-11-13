@@ -54,9 +54,9 @@ export class LongETHStrategy implements VoFarmStrategy {
             (Math.abs(lsd) * -4) - 11
 
         if (ll > 17) {
-            if (this.isPreviousAdviceOlderThanXMinutes(30)) {
+            if (this.isPreviousAdviceOlderThanXMinutes(3)) {
                 aPL = aPL / ll
-            } else if (this.isPreviousAdviceOlderThanXMinutes(10)) {
+            } else if (this.isPreviousAdviceOlderThanXMinutes(1)) {
                 aPL = aPL / (ll / 2)
             }
         }
@@ -69,13 +69,13 @@ export class LongETHStrategy implements VoFarmStrategy {
     protected getAddingPointShort(lsd: number, ll: number): number {
 
         let aPS = (lsd > 0) ?
-            - 33 :
-            (Math.abs(lsd) * -7) - 33
+            - 44 :
+            (Math.abs(lsd) * -7) - 44
 
         if (ll > 17) {
-            if (this.isPreviousAdviceOlderThanXMinutes(60)) {
+            if (this.isPreviousAdviceOlderThanXMinutes(10)) {
                 aPS = aPS / ll
-            } else if (this.isPreviousAdviceOlderThanXMinutes(30)) {
+            } else if (this.isPreviousAdviceOlderThanXMinutes(5)) {
                 aPS = aPS / (ll / 2)
             }
 
