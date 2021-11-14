@@ -1,6 +1,7 @@
-import { LongShortExploitStrategy } from "./src/long-short-exploit-strategy.ts";
 
-const longShortExploitStrategy: LongShortExploitStrategy = new LongShortExploitStrategy()
+import { LongShortBaseETHStrategy } from "./src/strategies/long-short-base-eth.strategy.ts"
+
+const longShortExploitStrategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy()
 
 const testInput1 = {
     accountInfo: { result: { USDT: { available_balance: 100, equity: 100 } } },
