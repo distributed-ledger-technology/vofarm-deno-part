@@ -156,6 +156,10 @@ export class VolatilityFarmer {
 
         await this.logger.log(message)
 
+        if (investmentAdvices.length > 0) {
+            console.log(JSON.stringify(investmentAdvices))
+        }
+
         for (const investmentAdvice of investmentAdvices) {
             let r
 
