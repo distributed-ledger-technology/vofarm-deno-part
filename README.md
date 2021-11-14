@@ -1,19 +1,15 @@
 # VoFarm - Volatility Farming
 A peer 2 peer approach to increase price stability and to reduce price manipulation by exploiting non-fundamentals-based volatility.   
 
+This module leverages [web3](https://deno.land/x/web3) and the [exchange connectors](https://deno.land/x/exchange_connectors).  
+
 Open Source Developers are invited to propose further strategies via Pull Requests.   
 
 ## Usage Examples Regarding Strategies Reuse
 ### Via Commandline
-#### Simple
 ```sh
 deno run https://deno.land/x/vofarm/usage-example.ts
 ```
-#### Advanced
-```sh
-deno run https://deno.land/x/vofarm/usage-example-with-persisted-log-entries.ts
-```
-
 ### Via Your Own Code
 ```ts 
 
