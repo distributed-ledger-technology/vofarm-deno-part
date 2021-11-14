@@ -2,7 +2,7 @@ import { assertEquals } from "https://deno.land/std@0.86.0/testing/asserts.ts"
 import { Action } from "../interfaces/action.ts"
 import { InvestmentAdvice } from "../interfaces/investment-advice.ts"
 import { InvestmentDecisionBaseLongShortExploit } from "../interfaces/investment-decision-base-long-short-exploit.ts"
-import { LongShortBaseETHStrategy } from "./long-short-base-btc.strategy.ts";
+import { LongShortBaseETHStrategy } from "./long-short-base-eth.strategy.ts"
 
 export interface ITestData {
     input: InvestmentDecisionBaseLongShortExploit,

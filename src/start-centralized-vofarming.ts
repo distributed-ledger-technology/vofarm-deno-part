@@ -6,7 +6,6 @@ import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
 import { VFLogger } from "./utilities/logger.ts"
 // import { LongETHStrategy } from "./long-eth-strategy.ts"
-import { LongShortExploitStrategy } from "./long-short-exploit-strategy.ts"
 import { LongShortBaseETHStrategy } from "./strategies/long-short-base-eth.strategy.ts";
 
 const apiKey = Deno.args[0]
