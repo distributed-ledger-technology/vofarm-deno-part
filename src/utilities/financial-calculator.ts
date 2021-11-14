@@ -22,7 +22,7 @@ export class FinancialCalculator {
     }
 
     public static getLongShortDeltaInPercent(positions: any[], pair?: string): number {
-
+        console.log(positions)
         const sumOfLongValues = FinancialCalculator.getSumOfValues('Buy', positions, pair)
         const sumOfShortValues = FinancialCalculator.getSumOfValues('Sell', positions, pair)
 

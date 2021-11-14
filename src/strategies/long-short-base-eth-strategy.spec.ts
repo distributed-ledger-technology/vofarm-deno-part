@@ -2,7 +2,8 @@ import { assertEquals } from "https://deno.land/std@0.86.0/testing/asserts.ts"
 import { Action } from "../interfaces/action.ts"
 import { InvestmentAdvice } from "../interfaces/investment-advice.ts"
 import { InvestmentDecisionBaseLongShortExploit } from "../interfaces/investment-decision-base-long-short-exploit.ts"
-import { LongShortBaseETHStrategy } from "./long-short-base-eth.strategy.ts"
+import { VFLogger } from "../utilities/logger.ts";
+import { LongShortBaseETHStrategy } from "./long-short-base-eth-strategy.ts"
 
 export interface ITestData {
     input: InvestmentDecisionBaseLongShortExploit,
@@ -50,15 +51,14 @@ const testSets: ITestData[] = [
 ]
 Deno.test("should return great investment advices", async () => {
 
-    const strategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy()
+    const strategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy(new VFLogger("123apikeyunittest"))
 
     console.log(testSets.length)
 
     for (const testSet of testSets) {
+        let inputForStrategy = { fundamentals: testSet.input }
 
-        const investmentAdvices: InvestmentAdvice[] = await strategy.getInvestmentAdvices(testSet.input)
-
-        console.log(investmentAdvices)
+        const investmentAdvices: InvestmentAdvice[] = await strategy.getInvestmentAdvices(inputForStrategy)
 
         // assertEquals(investmentAdvices.length, testSet.output.length)
         assertEquals(investmentAdvices, testSet.output)

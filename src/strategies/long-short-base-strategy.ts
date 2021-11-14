@@ -1,4 +1,5 @@
 import { sleep } from "https://deno.land/x/sleep@v1.2.0/sleep.ts"
+import { IExchangeConnector } from "../../deps.ts";
 import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
@@ -10,22 +11,32 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected lastAdviceDate: Date = new Date()
     protected oPNLClosingLimit: number = 54
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01 }
+    protected liquidityLevel = 0
+    protected fundamentals: any = {}
 
-    public constructor(private logger?: VFLogger) { }
+    public constructor(private logger: VFLogger) { }
 
     public abstract setAssetInfo(assetInfo: AssetInfo): void
 
-    public async getInvestmentAdvices(investmentDecisionBase: any): Promise<InvestmentAdvice[]> {
+    public async getInvestmentAdvices(input: any): Promise<InvestmentAdvice[]> {
 
-        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(investmentDecisionBase.positions, this.assetInfo.pair)
-        let liquidityLevel = (investmentDecisionBase.accountInfo.result.USDT.available_balance / investmentDecisionBase.accountInfo.result.USDT.equity) * 20
+        if (input.fundamentals === undefined) {
+            await this.collectFundamentals(input.exchangeConnector)
+        } else {
+            this.fundamentals.accountInfo = input.fundamentals.accountInfo
+            this.fundamentals.positions = input.fundamentals.positions
+        }
 
-        let longPosition = investmentDecisionBase.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === this.assetInfo.pair)[0]
-        let shortPosition = investmentDecisionBase.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === this.assetInfo.pair)[0]
+
+        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, this.assetInfo.pair)
+        let liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
+
+        let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === this.assetInfo.pair)[0]
+        let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === this.assetInfo.pair)[0]
 
         for (const move of Object.values(Action)) {
             await sleep(0.1)
-            await this.deriveInvestmentAdvice(this.assetInfo, move, investmentDecisionBase, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
+            await this.deriveInvestmentAdvice(this.assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
         }
 
 
@@ -33,6 +44,20 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         this.currentInvestmentAdvices = []
 
         return advices
+
+    }
+
+
+    protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
+
+        this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
+        if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
+
+        this.fundamentals.positions = await exchangeConnector.getPositions()
+        this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
+
+        const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(0)}} ***********`
+        console.log(message)
 
     }
 
@@ -123,12 +148,12 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         return false
     }
 
-    protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, investmentDecisionBase: any, lsd: number, ll: number, longP: any, shortP: any): Promise<void> {
+    protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<void> {
 
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
-            this.deriveSpecialMoves(assetInfo, investmentDecisionBase, ll, longP, shortP)
+            this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
 
         } else if (longP !== undefined && shortP !== undefined && this.currentInvestmentAdvices.length === 0) {
 
@@ -194,7 +219,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let aPL = this.getAddingPointLong(lsd, ll)
 
-                await this.log(`adding point long: ${aPL.toFixed(2)} (${pnlLong})`)
+                await this.logger.log(`adding point long: ${aPL.toFixed(2)} (${pnlLong})`)
 
                 if (pnlLong < aPL) {
                     let factor = Math.floor(Math.abs(lsd) / 10)
@@ -214,7 +239,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let aPS = this.getAddingPointShort(lsd, ll)
 
-                await this.log(`adding point short: ${aPS.toFixed(2)} (${pnlShort})`)
+                await this.logger.log(`adding point short: ${aPS.toFixed(2)} (${pnlShort})`)
 
                 if (pnlShort < aPS) {
 
@@ -234,7 +259,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let cPL = this.getClosingPointLong(lsd, ll)
 
-                await this.log(`closing point long: ${cPL.toFixed(2)} (${pnlLong})`)
+                await this.logger.log(`closing point long: ${cPL.toFixed(2)} (${pnlLong})`)
 
                 if (pnlLong > cPL && longP !== undefined && longP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} long position to realize ${pnlLong}% profits`
@@ -251,7 +276,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let cPS = this.getClosingPointShort(lsd, ll)
 
-                await this.log(`closing point short: ${cPS.toFixed(2)} (${pnlShort})`)
+                await this.logger.log(`closing point short: ${cPS.toFixed(2)} (${pnlShort})`)
 
                 if (pnlShort > cPS && shortP !== undefined && shortP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} short position to realize ${pnlShort}% profits`
@@ -267,7 +292,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         }
     }
 
-    protected deriveSpecialMoves(AssetInfo: AssetInfo, investmentDecisionBase: any, ll: number, longP: any, shortP: any): void {
+    protected deriveSpecialMoves(AssetInfo: AssetInfo, ll: number, longP: any, shortP: any): void {
 
         let overallPNL = 0
         try {
@@ -282,12 +307,6 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
         this.checkSetup(AssetInfo, longP, shortP)
 
-    }
-
-    protected async log(message: string) {
-        if (this.logger !== undefined) {
-            await this.logger.log(message)
-        }
     }
 }
 
