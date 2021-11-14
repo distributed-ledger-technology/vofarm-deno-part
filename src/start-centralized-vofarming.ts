@@ -3,8 +3,8 @@ import { VolatilityFarmer } from "./vofarmer.ts"
 import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
 import { VFLogger } from "./utilities/logger.ts"
-import { LongShortBaseETHStrategy } from "./strategies/long-short-base-eth.strategy.ts";
 import { LongShortBaseBTCStrategy } from "./strategies/long-short-base-btc.strategy.ts";
+import { LongShortBaseETHStrategy } from "./strategies/long-short-base-eth-strategy.ts";
 
 const apiKey = Deno.args[0]
 const apiSecret = Deno.args[1]

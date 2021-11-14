@@ -5,7 +5,7 @@ import { LongShortBaseStrategy } from "./long-short-base-strategy.ts"
 
 export class LongShortBaseBTCStrategy extends LongShortBaseStrategy {
 
-    public constructor(vfLogger?: VFLogger) {
+    public constructor(vfLogger: VFLogger) {
 
         super(vfLogger)
         this.setAssetInfo({ pair: "BTCUSDT", minTradingAmount: 0.001 })

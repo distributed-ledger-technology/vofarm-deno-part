@@ -2,6 +2,7 @@ import { assertEquals } from "https://deno.land/std@0.86.0/testing/asserts.ts"
 import { Action } from "../interfaces/action.ts"
 import { InvestmentAdvice } from "../interfaces/investment-advice.ts"
 import { InvestmentDecisionBaseLongShortExploit } from "../interfaces/investment-decision-base-long-short-exploit.ts"
+import { VFLogger } from "../utilities/logger.ts";
 import { LongShortBaseBTCStrategy } from "./long-short-base-btc.strategy.ts"
 // import { VFLogger } from "./utilities/logger.ts"
 
@@ -83,9 +84,7 @@ const testSets: ITestData[] = [
 ]
 Deno.test("should return great investment advices", async () => {
 
-    const strategy: LongShortBaseBTCStrategy = new LongShortBaseBTCStrategy()
-
-    console.log(testSets.length)
+    const strategy: LongShortBaseBTCStrategy = new LongShortBaseBTCStrategy(new VFLogger("abc"))
 
     for (const testSet of testSets) {
 

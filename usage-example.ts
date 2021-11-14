@@ -1,7 +1,7 @@
+import { LongShortBaseETHStrategy } from "./src/strategies/long-short-base-eth-strategy.ts"
+import { VFLogger } from "./src/utilities/logger.ts";
 
-import { LongShortBaseETHStrategy } from "./src/strategies/long-short-base-eth.strategy.ts"
-
-const longShortExploitStrategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy()
+const longShortExploitStrategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy(new VFLogger("api key not secret e.g. in case you want to filter your logs for it... "))
 
 const testInput1 = {
     accountInfo: { result: { USDT: { available_balance: 100, equity: 100 } } },

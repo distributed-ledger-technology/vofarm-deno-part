@@ -53,14 +53,11 @@ Deno.test("should return great investment advices", async () => {
 
     const strategy: LongShortBaseETHStrategy = new LongShortBaseETHStrategy(new VFLogger("123apikeyunittest"))
 
-    console.log(testSets.length)
-
     for (const testSet of testSets) {
         let inputForStrategy = { fundamentals: testSet.input }
 
         const investmentAdvices: InvestmentAdvice[] = await strategy.getInvestmentAdvices(inputForStrategy)
 
-        // assertEquals(investmentAdvices.length, testSet.output.length)
         assertEquals(investmentAdvices, testSet.output)
 
     }
