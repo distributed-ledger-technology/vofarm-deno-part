@@ -108,8 +108,8 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected getClosingPointLong(lsd: number, ll: number): number {
 
         let cPL = (lsd > 0) ?
-            142 :
-            Math.abs(lsd) + 142
+            56 :
+            Math.abs(lsd) + 56
 
         if (ll < 1) {
             cPL = 0
@@ -123,8 +123,8 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected getClosingPointShort(lsd: number, ll: number): number {
 
         let cPS = (lsd < 0) ?
-            56 :
-            lsd + 56
+            48 :
+            lsd + 48
 
         if (ll < 1) {
             cPS = 0
