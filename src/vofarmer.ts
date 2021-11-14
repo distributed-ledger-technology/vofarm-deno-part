@@ -35,7 +35,7 @@ export class VolatilityFarmer {
 
     public constructor(apiKey: string, private exchangeConnector: IExchangeConnector, private voFarmStrategies: VoFarmStrategy, private mongoService: IPersistenceService | undefined, private logger: IVFLogger) {
 
-        this.pair = this.voFarmStrategies.getInvestmentOptions()[0].pair
+        this.pair = this.voFarmStrategies.getAssetInfo().pair
 
         this.activeProcess = {
             apiKey,

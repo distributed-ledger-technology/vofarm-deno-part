@@ -1,7 +1,8 @@
 import { InvestmentAdvice } from "./investment-advice.ts";
-import { InvestmentOption } from "./investment-option.ts";
+import { AssetInfo } from "./investment-option.ts";
 
 export interface VoFarmStrategy {
-    getInvestmentOptions(): InvestmentOption[]
+    getAssetInfo(): AssetInfo
+    setAssetInfo(assetInfo: AssetInfo): void
     getInvestmentAdvices(investmentDecisionBase: any): Promise<InvestmentAdvice[]>
 }
