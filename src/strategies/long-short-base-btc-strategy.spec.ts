@@ -88,9 +88,10 @@ Deno.test("should return great investment advices", async () => {
 
     for (const testSet of testSets) {
 
-        const investmentAdvices: InvestmentAdvice[] = await strategy.getInvestmentAdvices(testSet.input)
+        let inputForStrategy = { fundamentals: testSet.input }
 
-        console.log(investmentAdvices)
+        const investmentAdvices: InvestmentAdvice[] = await strategy.getInvestmentAdvices(inputForStrategy)
+
 
         // assertEquals(investmentAdvices.length, testSet.output.length)
         assertEquals(investmentAdvices, testSet.output)
