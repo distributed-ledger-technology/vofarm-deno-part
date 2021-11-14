@@ -6,9 +6,8 @@ import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
 import { VFLogger } from "./utilities/logger.ts"
 import { LongETHStrategy } from "./long-eth-strategy.ts"
+import { LongShortExploitStrategy } from "./long-short-exploit-strategy.ts"
 
-
-// get parameters
 const apiKey = Deno.args[0]
 const apiSecret = Deno.args[1]
 const dbUser = Deno.args[2]
@@ -20,15 +19,14 @@ const persistenceHost = (Deno.args[7] === undefined) ? '65.21.110.40' : Deno.arg
 const persistencePort = (Deno.args[8] === undefined) ? '27017' : Deno.args[8]
 const loggerClassName = (Deno.args[9] === undefined) ? 'VFLogger' : Deno.args[9]
 
-
-// Dependent On Components Handling
 const registryVoFarmStrategies = new Registry()
 const registryExchangeConnectors = new Registry()
 const registryPersistenceServices = new Registry()
 const registryLoggerServices = new Registry()
 
-// registryInvestmentAdvisors.register(ETHLongWithHiddenOverallHedge)
 registryVoFarmStrategies.register(LongETHStrategy)
+registryVoFarmStrategies.register(LongShortExploitStrategy)
+
 registryExchangeConnectors.register(BybitConnector)
 registryPersistenceServices.register(MongoService)
 registryLoggerServices.register(VFLogger)
@@ -42,7 +40,6 @@ const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFar
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(apiKey, exchangeConnector, voFarmStrategies, persistenceService, vfLogger)
 
 
-// start farming interval - farming each 4 seconds
 const intervalLengthInSeconds = 4
 volatilityFarmer.farm(intervalLengthInSeconds)
 
