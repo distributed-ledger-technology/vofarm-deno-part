@@ -46,6 +46,7 @@ export class VolatilityFarmer {
         let inputForStrategy = { exchangeConnector: this.exchangeConnector }
 
         const investmentAdvices = await this.voFarmStrategy.getInvestmentAdvices(inputForStrategy)
+        console.log(investmentAdvices.length)
         await sleep(0.1)
         await this.applyInvestmentAdvices(investmentAdvices)
 
@@ -81,8 +82,6 @@ export class VolatilityFarmer {
                 r = await this.exchangeConnector.buyFuture(investmentAdvice.pair, investmentAdvice.amount, true)
 
             }
-
-            await this.logger.log(message)
 
         }
 

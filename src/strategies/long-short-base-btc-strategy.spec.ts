@@ -3,7 +3,7 @@ import { Action } from "../interfaces/action.ts"
 import { InvestmentAdvice } from "../interfaces/investment-advice.ts"
 import { InvestmentDecisionBaseLongShortExploit } from "../interfaces/investment-decision-base-long-short-exploit.ts"
 import { VFLogger } from "../utilities/logger.ts";
-import { LongShortBaseBTCStrategy } from "./long-short-base-btc.strategy.ts"
+import { LongShortBaseBTCStrategy } from "./long-short-base-btc-strategy.ts"
 // import { VFLogger } from "./utilities/logger.ts"
 
 export interface ITestData {

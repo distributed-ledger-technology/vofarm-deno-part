@@ -292,7 +292,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         }
     }
 
-    protected deriveSpecialMoves(AssetInfo: AssetInfo, ll: number, longP: any, shortP: any): void {
+    protected deriveSpecialMoves(assetInfo: AssetInfo, ll: number, longP: any, shortP: any): void {
 
         let overallPNL = 0
         try {
@@ -303,9 +303,9 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
         this.oPNLClosingLimit = Math.round(Math.random() * (81 - 36) + 36)
 
-        console.log(`overallPNL: ${overallPNL} vs. oPNLClosingLimit: ${this.oPNLClosingLimit} vs. liquidityLevel: ${ll}`)
+        console.log(`${assetInfo.pair}: - overallPNL: ${overallPNL} vs. oPNLClosingLimit: ${this.oPNLClosingLimit} vs. liquidityLevel: ${ll}`)
 
-        this.checkSetup(AssetInfo, longP, shortP)
+        this.checkSetup(assetInfo, longP, shortP)
 
     }
 }
