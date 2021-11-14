@@ -53,7 +53,7 @@ export class LongETHStrategy implements VoFarmStrategy {
             -11 :
             (Math.abs(lsd) * -4) - 11
 
-        if (ll > 17) {
+        if (ll > 4) {
             if (this.isPreviousAdviceOlderThanXMinutes(3)) {
                 aPL = aPL / ll
             } else if (this.isPreviousAdviceOlderThanXMinutes(1)) {
@@ -72,7 +72,7 @@ export class LongETHStrategy implements VoFarmStrategy {
             - 44 :
             (Math.abs(lsd) * -7) - 44
 
-        if (ll > 17) {
+        if (ll > 4) {
             if (this.isPreviousAdviceOlderThanXMinutes(10)) {
                 aPS = aPS / ll
             } else if (this.isPreviousAdviceOlderThanXMinutes(5)) {
