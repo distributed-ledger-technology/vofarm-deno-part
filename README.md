@@ -7,7 +7,7 @@ Open Source Developers are invited to propose further strategies via Pull Reques
 
 ## Usage Examples Regarding Centralized Volatility Farming
 ```sh
-deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> <yourmongodbuser> <yourmongodbpw> LongShortExploitStrategy BybitConnector MongoService <yourmongodbhostip> <yourmongodbport> VFLogger
+deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> BybitConnector LongShortExploitStrategy
 ```
 
 ## Usage Examples Regarding Decentralized Volatility Farming
