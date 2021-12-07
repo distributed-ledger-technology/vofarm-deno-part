@@ -88,13 +88,13 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected getAddingPointShort(lsd: number, ll: number): number {
 
         let aPS = (lsd > 0) ?
-            - 44 :
-            (Math.abs(lsd) * -7) - 44
+            - 144 :
+            (Math.abs(lsd) * -7) - 144
 
         if (ll > 4) {
-            if (this.isPreviousAdviceOlderThanXMinutes(10)) {
+            if (this.isPreviousAdviceOlderThanXMinutes(60)) {
                 aPS = aPS / ll
-            } else if (this.isPreviousAdviceOlderThanXMinutes(5)) {
+            } else if (this.isPreviousAdviceOlderThanXMinutes(30)) {
                 aPS = aPS / (ll / 2)
             }
 
