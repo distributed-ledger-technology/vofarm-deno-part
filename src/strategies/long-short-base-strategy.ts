@@ -9,7 +9,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
-    protected oPNLClosingLimit: number = 54
+    protected oPNLClosingLimit: number = 36
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01 }
     protected liquidityLevel = 0
     protected fundamentals: any = {}
@@ -51,6 +51,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
+
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
 
         this.fundamentals.positions = await exchangeConnector.getPositions()
