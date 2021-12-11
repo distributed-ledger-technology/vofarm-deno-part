@@ -35,6 +35,6 @@ const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFar
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
 
-const intervalLengthInSeconds = 11 * 2
+const intervalLengthInSeconds = 11
 volatilityFarmer.farm(intervalLengthInSeconds)
 
