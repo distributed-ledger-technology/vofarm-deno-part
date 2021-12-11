@@ -214,7 +214,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
-            // this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
+            this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
 
         } else if (longP !== undefined && shortP !== undefined && this.currentInvestmentAdvices.length === 0) {
 
@@ -357,10 +357,21 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected deriveSpecialMoves(assetInfo: AssetInfo, ll: number, longP: any, shortP: any): void {
 
+        let overallPNL = 0
+        try {
+            overallPNL = FinancialCalculator.getOverallPNLInPercent(longP, shortP)
+        } catch (error) {
+            console.log(error.message)
+        }
 
-        if (ll < 1) {
-            this.closeAll(assetInfo, `closing ${assetInfo.pair} because ll < 0.1`, longP, shortP)
+        // if (longP.data.symbol === 'ETHUSDT') {
+        //     console.log(`oPNL: ${overallPNL} - ${JSON.stringify(shortP)}`)
+        // }
+
+        if (ll < 1 || overallPNL > this.oPNLClosingLimit) {
+            this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else {
+
             this.checkSetup(assetInfo, longP, shortP)
         }
 
