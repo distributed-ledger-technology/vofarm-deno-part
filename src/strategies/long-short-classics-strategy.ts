@@ -214,7 +214,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
-            this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
+            this.deriveSpecialMoves(assetInfo, ll, longP, shortP, lsd)
 
         } else if (longP !== undefined && shortP !== undefined && this.currentInvestmentAdvices.length === 0) {
 
@@ -355,7 +355,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         }
     }
 
-    protected deriveSpecialMoves(assetInfo: AssetInfo, ll: number, longP: any, shortP: any): void {
+    protected deriveSpecialMoves(assetInfo: AssetInfo, ll: number, longP: any, shortP: any, lsd: number): void {
 
         let overallPNL = 0
         try {
@@ -369,7 +369,14 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 1 || overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else {
-
+            console.log(`lsd: ${lsd}`)
+            if (lsd > 60) {
+                const amountToBeShortSold = longP.data.size - shortP.data.size
+                this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)
+            } else if (lsd < -60) {
+                const amountToBeBought = shortP.data.size - longP.data.size
+                this.addInvestmentAdvice(Action.BUY, amountToBeBought, assetInfo.pair, `balancing ${assetInfo.pair} `)
+            }
             this.checkSetup(assetInfo, longP, shortP)
         }
 
