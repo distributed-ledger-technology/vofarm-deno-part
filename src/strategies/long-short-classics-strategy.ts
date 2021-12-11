@@ -26,6 +26,20 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "FILUSDT", minTradingAmount: 1 },
         { pair: "XLMUSDT", minTradingAmount: 1 },
         { pair: "MANAUSDT", minTradingAmount: 1 },
+        { pair: "ICPUSDT", minTradingAmount: 1 },
+        { pair: "VETUSDT", minTradingAmount: 10 },
+        { pair: "AAVEUSDT", minTradingAmount: 1 },
+        { pair: "COMPUSDT", minTradingAmount: 0.1 },
+        { pair: "XTZUSDT", minTradingAmount: 1 },
+        { pair: "THETAUSDT", minTradingAmount: 1 },
+        { pair: "ETCUSDT", minTradingAmount: 0.1 },
+        { pair: "HBARUSDT", minTradingAmount: 1 },
+        { pair: "EGLDUSDT", minTradingAmount: 0.01 },
+        { pair: "ATOMUSDT", minTradingAmount: 0.1 },
+        { pair: "TRXUSDT", minTradingAmount: 10 },
+        { pair: "ALGOUSDT", minTradingAmount: 1 },
+        // { pair: "HNTUSDT", minTradingAmount: 1 },
+        // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
     protected liquidityLevel = 0
     protected fundamentals: any = {}
