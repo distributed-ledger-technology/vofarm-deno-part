@@ -38,6 +38,10 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "ATOMUSDT", minTradingAmount: 0.1 },
         { pair: "TRXUSDT", minTradingAmount: 10 },
         { pair: "ALGOUSDT", minTradingAmount: 1 },
+        { pair: "BCHUSDT", minTradingAmount: 0.01 },
+        { pair: "MATICUSDT", minTradingAmount: 1 },
+        { pair: "DOGEUSDT", minTradingAmount: 1 },
+        { pair: "XRPUSDT", minTradingAmount: 1 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
