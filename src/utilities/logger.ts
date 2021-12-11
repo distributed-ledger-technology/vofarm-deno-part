@@ -8,7 +8,7 @@ export class VFLogger implements IVFLogger {
         this.apiKey = apiKey
     }
 
-    public async log(message: string): Promise<void> {
+    public log(message: string): void {
         console.log(message)
     }
 }
