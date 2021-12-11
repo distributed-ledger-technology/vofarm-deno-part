@@ -10,6 +10,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
     protected oPNLClosingLimit: number = 36
+    protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01 }
     protected assetInfos: AssetInfo[] = [
         { pair: "ETHUSDT", minTradingAmount: 0.01 },
@@ -57,6 +58,11 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "LRCUSDT", minTradingAmount: 1 },
         { pair: "GRTUSDT", minTradingAmount: 1 },
         { pair: "FLOWUSDT", minTradingAmount: 1 },
+        { pair: "KSMUSDT", minTradingAmount: 0.1 },
+        { pair: "ZECUSDT", minTradingAmount: 0.01 },
+        { pair: "ONEUSDT", minTradingAmount: 1 },
+        { pair: "RUNEUSDT", minTradingAmount: 1 },
+        { pair: "CHZUSDT", minTradingAmount: 1 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
@@ -76,35 +82,46 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             this.fundamentals.positions = input.fundamentals.positions
         }
 
-        let advices: InvestmentAdvice[] = []
+        this.advices = []
 
         for (const assetInfo of this.assetInfos) {
 
-            let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
-            let liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-
-            let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
-            let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
-
-            if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
-                throw new Error(`you should adjust the leverage for ${longPosition.data.symbol}`)
+            try {
+                await this.playAsset(assetInfo)
+            } catch (error) {
+                console.log(`strange situation while playing ${assetInfo.pair}`)
             }
-
-            for (const move of Object.values(Action)) {
-                await sleep(0.002)
-                await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
-            }
-
-
-            advices = advices.concat([...this.currentInvestmentAdvices])
-            this.currentInvestmentAdvices = []
 
         }
 
-        return advices
+        return this.advices
 
     }
 
+    protected async playAsset(assetInfo: AssetInfo): Promise<InvestmentAdvice[]> {
+
+        let advicesForAsset: InvestmentAdvice[] = []
+
+        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
+        let liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
+
+        let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
+        let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
+
+        if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
+            throw new Error(`you should adjust the leverage for ${longPosition.data.symbol}`)
+        }
+
+        for (const move of Object.values(Action)) {
+            await sleep(0.002)
+            advicesForAsset = await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
+            this.advices = this.advices.concat([...advicesForAsset])
+        }
+
+
+        return this.advices
+
+    }
 
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
@@ -191,18 +208,21 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         return false
     }
 
-    protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<void> {
+    protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<InvestmentAdvice[]> {
 
+        this.currentInvestmentAdvices = []
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
-            this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
+            // this.deriveSpecialMoves(assetInfo, ll, longP, shortP)
 
         } else if (longP !== undefined && shortP !== undefined && this.currentInvestmentAdvices.length === 0) {
 
             await this.deriveStandardMoves(assetInfo, move, lsd, ll, longP, shortP)
 
         }
+
+        return this.currentInvestmentAdvices
 
     }
 
