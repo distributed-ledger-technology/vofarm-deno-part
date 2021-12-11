@@ -7,6 +7,7 @@ import { LongShortBaseBTCStrategy } from "./strategies/long-short-base-btc-strat
 import { LongShortBaseETHStrategy } from "./strategies/long-short-base-eth-strategy.ts";
 import { LongShortBaseBNBStrategy } from "./strategies/long-short-base-bnb-strategy.ts";
 import { LongShortBaseCombinedStrategy } from "./strategies/long-short-base-combined-strategy.ts";
+import { LongShortClassics } from "./strategies/long-short-classics-strategy.ts";
 
 const apiKey = Deno.args[0]
 const apiSecret = Deno.args[1]
@@ -22,6 +23,7 @@ const registryLoggerServices = new Registry()
 registryVoFarmStrategies.register(LongShortBaseETHStrategy)
 registryVoFarmStrategies.register(LongShortBaseBTCStrategy)
 registryVoFarmStrategies.register(LongShortBaseBNBStrategy)
+registryVoFarmStrategies.register(LongShortClassics)
 registryVoFarmStrategies.register(LongShortBaseCombinedStrategy)
 
 registryExchangeConnectors.register(BybitConnector)
@@ -33,6 +35,6 @@ const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFar
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
 
-const intervalLengthInSeconds = 7
+const intervalLengthInSeconds = 11 * 2
 volatilityFarmer.farm(intervalLengthInSeconds)
 

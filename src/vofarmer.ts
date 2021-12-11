@@ -59,7 +59,7 @@ export class VolatilityFarmer {
     protected async applyInvestmentAdvices(investmentAdvices: InvestmentAdvice[]): Promise<void> {
 
         const message = `applying ${investmentAdvices.length} investment advices`
-
+        console.log(JSON.stringify(investmentAdvices))
         await this.logger.log(message)
 
         for (const investmentAdvice of investmentAdvices) {
