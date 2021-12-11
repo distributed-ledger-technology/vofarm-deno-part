@@ -9,7 +9,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
-    protected oPNLClosingLimit: number = 36
+    protected oPNLClosingLimit: number = 30
     protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01 }
     protected assetInfos: AssetInfo[] = [
