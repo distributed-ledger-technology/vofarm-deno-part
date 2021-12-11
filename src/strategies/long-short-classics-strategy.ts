@@ -364,9 +364,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             console.log(error.message)
         }
 
-        // if (longP.data.symbol === 'ETHUSDT') {
-        //     console.log(`oPNL: ${overallPNL} - ${JSON.stringify(shortP)}`)
-        // }
+        console.log(`${assetInfo.pair} oPNL: ${overallPNL}`)
 
         if (ll < 1 || overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
