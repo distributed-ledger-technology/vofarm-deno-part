@@ -9,7 +9,7 @@ export class LongShortBaseETHStrategy extends LongShortBaseStrategy {
     public constructor(vfLogger: VFLogger) {
 
         super(vfLogger)
-        this.setAssetInfo({ pair: "ETHUSDT", minTradingAmount: 0.01 })
+        this.setAssetInfo({ pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 })
 
     }
 

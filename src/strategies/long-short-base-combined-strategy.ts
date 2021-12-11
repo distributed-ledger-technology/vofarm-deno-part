@@ -17,7 +17,7 @@ export class LongShortBaseCombinedStrategy implements VoFarmStrategy {
         this.strategies.push(new LongShortBaseETHStrategy(this.logger))
         this.strategies.push(new LongShortBaseBNBStrategy(this.logger))
 
-        this.assetInfo = { pair: "not relevant in this special case", minTradingAmount: 0 }
+        this.assetInfo = { pair: "not relevant in this special case", minTradingAmount: 0, decimalPlaces: 0 }
     }
 
 

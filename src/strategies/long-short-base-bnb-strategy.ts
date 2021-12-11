@@ -9,7 +9,7 @@ export class LongShortBaseBNBStrategy extends LongShortBaseStrategy {
     public constructor(vfLogger: VFLogger) {
 
         super(vfLogger)
-        this.setAssetInfo({ pair: "BNBUSDT", minTradingAmount: 0.1 })
+        this.setAssetInfo({ pair: "BNBUSDT", minTradingAmount: 0.1, decimalPlaces: 1 })
 
     }
 

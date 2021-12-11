@@ -10,7 +10,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
     protected oPNLClosingLimit: number = 36
-    protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01 }
+    protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
     protected liquidityLevel = 0
     protected fundamentals: any = {}
 

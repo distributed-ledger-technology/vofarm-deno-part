@@ -8,7 +8,7 @@ export class LongShortBaseBTCStrategy extends LongShortBaseStrategy {
     public constructor(vfLogger: VFLogger) {
 
         super(vfLogger)
-        this.setAssetInfo({ pair: "BTCUSDT", minTradingAmount: 0.001 })
+        this.setAssetInfo({ pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3 })
 
     }
 
