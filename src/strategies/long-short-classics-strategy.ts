@@ -44,6 +44,11 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "XRPUSDT", minTradingAmount: 1 },
         { pair: "LTCUSDT", minTradingAmount: 0.1 },
         { pair: "SANDUSDT", minTradingAmount: 1 },
+        { pair: "BITUSDT", minTradingAmount: 1 },
+        { pair: "IOTXUSDT", minTradingAmount: 10 },
+        { pair: "DYDXUSDT", minTradingAmount: 1 },
+        { pair: "SUSHIUSDT", minTradingAmount: 1 },
+        { pair: "CRVUSDT", minTradingAmount: 1 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
@@ -118,7 +123,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd <= 0) {
             aPL = 0
-        } else if (lsd < 80 && ll > 7) {
+        } else if (lsd < 80 && ll > 5) {
             aPL = lsd * -1
         }
 
@@ -133,7 +138,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd >= 0) {
             aPS = -1
-        } else if (lsd > -80 && ll > 11) {
+        } else if (lsd > -80 && ll > 7) {
             aPS = lsd
         }
 
