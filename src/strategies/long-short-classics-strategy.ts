@@ -371,10 +371,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         } else {
             console.log(`lsd: ${lsd}`)
             if (lsd > 60) {
-                const amountToBeShortSold = longP.data.size - shortP.data.size
+                // const amountToBeShortSold = longP.data.size - shortP.data.size
+                const amountToBeShortSold = assetInfo.minTradingAmount * 10
                 this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)
             } else if (lsd < -60) {
-                const amountToBeBought = shortP.data.size - longP.data.size
+                // const amountToBeBought = shortP.data.size - longP.data.size
+                const amountToBeBought = assetInfo.minTradingAmount * 10
                 this.addInvestmentAdvice(Action.BUY, amountToBeBought, assetInfo.pair, `balancing ${assetInfo.pair} `)
             }
             this.checkSetup(assetInfo, longP, shortP)
