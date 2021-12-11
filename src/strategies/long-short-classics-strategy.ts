@@ -366,6 +366,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         console.log(`${assetInfo.pair} oPNL: ${overallPNL}`)
 
+        if (ll < 1) {
+            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
+        } else {
+            this.oPNLClosingLimit = 30
+        }
+
         if (ll < 0.1 || overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else if (ll > 2) {
