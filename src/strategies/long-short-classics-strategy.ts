@@ -52,7 +52,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
 
             for (const move of Object.values(Action)) {
-                await sleep(0.1)
+                await sleep(0.02)
                 await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
             }
 
