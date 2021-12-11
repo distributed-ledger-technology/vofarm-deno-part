@@ -176,9 +176,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 3) {
             return 36
         } else if (lsd < 0) {
-            return (lsd * -1 * 11) + 40
+            return (lsd * -1 * 11) + 30
         } else {
-            return 4 * 11
+            return 3 * 11
         }
     }
 
@@ -187,9 +187,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 3) {
             return 36
         } else if (lsd < 0) {
-            return 11 * 4
+            return 11 * 3
         } else {
-            return (lsd * 11) + 40
+            return (lsd * 11) + 30
         }
     }
 
