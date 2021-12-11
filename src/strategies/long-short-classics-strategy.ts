@@ -117,7 +117,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
-        if (lsd < 0) {
+        if (ll < 3) {
+            return 36
+        } else if (lsd < 0) {
             return (lsd * -1 * 11) + 70
         } else {
             return 7 * 11
@@ -126,7 +128,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
-        if (lsd < 0) {
+        if (ll < 3) {
+            return 36
+        } else if (lsd < 0) {
             return 11 * 7
         } else {
             return (lsd * 11) + 70
