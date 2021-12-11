@@ -42,6 +42,8 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "MATICUSDT", minTradingAmount: 1 },
         { pair: "DOGEUSDT", minTradingAmount: 1 },
         { pair: "XRPUSDT", minTradingAmount: 1 },
+        { pair: "LTCUSDT", minTradingAmount: 0.1 },
+        { pair: "SANDUSDT", minTradingAmount: 1 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
@@ -71,8 +73,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
             let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
 
+            if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
+                throw new Error(`you should adjust the leverage for ${longPosition.data.symbol}`)
+            }
+
             for (const move of Object.values(Action)) {
-                await sleep(0.02)
+                await sleep(0.01)
                 await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
             }
 
