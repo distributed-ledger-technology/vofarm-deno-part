@@ -49,6 +49,14 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "DYDXUSDT", minTradingAmount: 1 },
         { pair: "SUSHIUSDT", minTradingAmount: 1 },
         { pair: "CRVUSDT", minTradingAmount: 1 },
+        { pair: "ENJUSDT", minTradingAmount: 1 },
+        { pair: "AXSUSDT", minTradingAmount: 0.1 },
+        { pair: "FTMUSDT", minTradingAmount: 1 },
+        { pair: "GALAUSDT", minTradingAmount: 1 },
+        { pair: "EOSUSDT", minTradingAmount: 1 },
+        { pair: "LRCUSDT", minTradingAmount: 1 },
+        { pair: "GRTUSDT", minTradingAmount: 1 },
+        { pair: "FLOWUSDT", minTradingAmount: 1 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
@@ -83,7 +91,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             }
 
             for (const move of Object.values(Action)) {
-                await sleep(0.01)
+                await sleep(0.002)
                 await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
             }
 
