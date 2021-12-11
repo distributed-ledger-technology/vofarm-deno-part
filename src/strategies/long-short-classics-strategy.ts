@@ -148,7 +148,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd <= 0) {
             aPL = 0
-        } else if (lsd < 80 && ll > 5) {
+        } else if (lsd < 80 && ll > 4) {
             aPL = lsd * -1
         }
 
@@ -163,7 +163,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd >= 0) {
             aPS = -1
-        } else if (lsd > -80 && ll > 7) {
+        } else if (lsd > -80 && ll > 5) {
             aPS = lsd
         }
 
