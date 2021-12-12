@@ -400,8 +400,8 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} - lsd: ${lsd.toFixed(2)}`, 2)
 
-        if (ll < 0.1) {
-            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
+        if (ll < 0.01) {
+            this.oPNLClosingLimit = this.oPNLClosingLimit - 0.2
         } else {
             this.oPNLClosingLimit = 100
         }
