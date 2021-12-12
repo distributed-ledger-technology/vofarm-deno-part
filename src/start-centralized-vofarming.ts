@@ -30,7 +30,7 @@ registryExchangeConnectors.register(BybitConnector)
 registryLoggerServices.register(VFLogger)
 
 const exchangeConnector: IExchangeConnector = new (registryExchangeConnectors.get(exchangeConnectorClassName))(apiKey, apiSecret)
-const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey)
+const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, 1)
 const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)

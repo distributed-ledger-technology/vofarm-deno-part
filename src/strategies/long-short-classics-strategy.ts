@@ -22,7 +22,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
         { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0 },
@@ -62,6 +61,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0 },
+        // { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0 },
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
@@ -88,7 +88,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             try {
                 await this.playAsset(assetInfo)
             } catch (error) {
-                console.log(`strange situation while playing ${assetInfo.pair}`)
+                this.logger.log(`strange situation while playing ${assetInfo.pair}`, 2)
             }
 
         }
@@ -132,7 +132,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
         const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(0)}} ***********`
-        console.log(message)
+        this.logger.log(message, 1)
 
     }
 
@@ -200,7 +200,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (this.lastAdviceDate < refDate) {
             const message = `lastAdviceDate :${this.lastAdviceDate} vs. refDate: ${refDate}`
-            console.log(message)
+            this.logger.log(message, 0)
             return true
         }
 
@@ -360,10 +360,10 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         try {
             overallPNL = FinancialCalculator.getOverallPNLInPercent(longP, shortP)
         } catch (error) {
-            console.log(error.message)
+            this.logger.log(error.message, 2)
         }
 
-        console.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} - lsd: ${lsd}`)
+        this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} - lsd: ${lsd.toFixed(2)}`, 2)
 
         if (ll < 1) {
             this.oPNLClosingLimit = this.oPNLClosingLimit - 1
@@ -376,10 +376,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         } else if (ll > 2) {
             this.checkSetup(assetInfo, longP, shortP)
             if (longP !== undefined && shortP !== undefined) {
-                this.balance(assetInfo, longP, shortP, lsd)
+                if (ll > 3) {
+                    this.balance(assetInfo, longP, shortP, lsd)
+                }
                 this.narrow(assetInfo, longP, shortP)
             } else {
-                console.log(`funny: ${assetInfo.pair}`)
+                this.logger.log(`funny: ${assetInfo.pair}`, 2)
             }
         }
 
@@ -393,6 +395,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     }
 
     protected async balance(assetInfo: AssetInfo, longP: any, shortP: any, lsd: number) {
+        if (assetInfo.pair === "ENSUSDT") {
+            this.logger.log(lsd.toString(), 2)
+        }
         if (lsd > 60) {
             const amountToBeShortSold = Number((longP.data.size - shortP.data.size).toFixed(assetInfo.decimalPlaces))
             this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)

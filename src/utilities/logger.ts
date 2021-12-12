@@ -2,13 +2,12 @@ import { IVFLogger } from "../interfaces/logger.ts"
 
 export class VFLogger implements IVFLogger {
 
-    private apiKey: string = ""
-
-    public constructor(apiKey: string) {
-        this.apiKey = apiKey
+    public constructor(private apiKey: string, private logLevel: number) {
     }
 
-    public log(message: string): void {
-        console.log(message)
+    public log(message: string, level: number = 0): void {
+        if (level >= this.logLevel) {
+            console.log(message)
+        }
     }
 }
