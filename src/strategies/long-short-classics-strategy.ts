@@ -1,5 +1,4 @@
-import { sleep } from "https://deno.land/x/sleep@v1.2.0/sleep.ts"
-import { IExchangeConnector } from "../../deps.ts";
+import { IExchangeConnector, sleep } from "../../deps.ts";
 import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
@@ -364,7 +363,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             console.log(error.message)
         }
 
-        console.log(`${assetInfo.pair} oPNL: ${overallPNL}`)
+        console.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} - lsd: ${lsd}`)
 
         if (ll < 1) {
             this.oPNLClosingLimit = this.oPNLClosingLimit - 1
@@ -390,7 +389,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     }
 
     protected async balance(assetInfo: AssetInfo, longP: any, shortP: any, lsd: number) {
-        console.log(`lsd: ${lsd}`)
         if (lsd > 60) {
             const amountToBeShortSold = Number((longP.data.size - shortP.data.size).toFixed(assetInfo.decimalPlaces))
             this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)

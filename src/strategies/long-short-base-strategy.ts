@@ -1,5 +1,4 @@
-import { sleep } from "https://deno.land/x/sleep@v1.2.0/sleep.ts"
-import { IExchangeConnector } from "../../deps.ts";
+import { IExchangeConnector, sleep } from "../../deps.ts";
 import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"

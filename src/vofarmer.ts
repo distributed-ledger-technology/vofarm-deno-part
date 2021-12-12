@@ -30,6 +30,7 @@ export class VolatilityFarmer {
             try {
 
                 await this.playTheGame()
+                sleep(Math.round(Math.random() * (2200 - 1) + 1) / 1000)
 
             } catch (error) {
 
