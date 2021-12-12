@@ -206,7 +206,11 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected getAddingPointLong(lsd: number, ll: number): number {
         if (ll > 3) {
-            return - 10
+            if (lsd < 0) {
+                return -10
+            } else {
+                return (Math.abs(lsd) * -1) - 10
+            }
         }
         return -200000
 
@@ -215,7 +219,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected getAddingPointShort(lsd: number, ll: number): number {
         if (ll > 3) {
-            return - 20
+            if (lsd > 0) {
+                return -11
+            } else {
+                return (Math.abs(lsd) * -1) - 11
+            }
+
         }
         return -200000
 
@@ -223,12 +232,18 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
-        return this.oPNLClosingLimit
+        if (lsd > 0) {
+            return this.oPNLClosingLimit - lsd + ll
+        }
+        return this.oPNLClosingLimit + lsd + ll
     }
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
-        return this.oPNLClosingLimit
+        if (lsd < 0) {
+            return this.oPNLClosingLimit - Math.abs(lsd) + ll
+        }
+        return this.oPNLClosingLimit + Math.abs(lsd) + ll
     }
 
 
