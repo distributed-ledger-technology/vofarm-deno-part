@@ -204,14 +204,14 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected getAddingPointLong(lsd: number, ll: number): number {
 
-        return -1
+        return -10
 
     }
 
 
     protected getAddingPointShort(lsd: number, ll: number): number {
 
-        return -2
+        return -20
 
     }
 
