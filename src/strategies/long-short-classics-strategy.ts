@@ -185,6 +185,8 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
+        const rateLimitHandlingToBeSafeTemp = await exchangeConnector.getFuturesAccountData()
+        console.log(rateLimitHandlingToBeSafeTemp)
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
 
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
@@ -203,15 +205,19 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getAddingPointLong(lsd: number, ll: number): number {
-
-        return -10
+        if (ll > 3) {
+            return - 10
+        }
+        return -200000
 
     }
 
 
     protected getAddingPointShort(lsd: number, ll: number): number {
-
-        return -20
+        if (ll > 3) {
+            return - 20
+        }
+        return -200000
 
     }
 
