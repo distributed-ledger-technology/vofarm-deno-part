@@ -111,21 +111,23 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         let shortValue = 0
 
         for (const position of this.fundamentals.positions) {
-            if (position.data.side === 'Buy') {
-                longValue = longValue + position.data.position_value
-            } else if (position.data.side === 'Sell') {
-                shortValue = shortValue + position.data.position_value
+            if (position.data.symbol !== 'ENSUSDT') { // we do not need to hedge this :) 
+                if (position.data.side === 'Buy') {
+                    longValue = longValue + position.data.position_value
+                } else if (position.data.side === 'Sell') {
+                    shortValue = shortValue + position.data.position_value
+                }
             }
         }
 
         let valueToBeHedged = longValue - shortValue
         this.logger.log(`we need to hedge ${valueToBeHedged}`, 1)
 
-        if (valueToBeHedged > 100) {
+        if (valueToBeHedged > 300) {
             this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', `we adjust the hedge`)
             this.addInvestmentAdvice(Action.SELL, 0.01, 'ETHUSDT', `we adjust the hedge`)
             this.addInvestmentAdvice(Action.SELL, 0.01, 'BNBUSDT', `we adjust the hedge`)
-        } else if (valueToBeHedged < -100) {
+        } else if (valueToBeHedged < -200) {
             this.addInvestmentAdvice(Action.BUY, 0.001, 'BTCUSDT', `we adjust the hedge`)
             this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', `we adjust the hedge`)
             this.addInvestmentAdvice(Action.BUY, 0.01, 'BNBUSDT', `we adjust the hedge`)
@@ -207,23 +209,19 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
-        if (ll < 3) {
-            return 36
-        } else if (lsd < 0) {
-            return (lsd * -1 * 11) + 50
+        if (ll < 1 || lsd > 0) {
+            return this.oPNLClosingLimit
         } else {
-            return 3 * 11
+            return (lsd * -1 * 11) + this.oPNLClosingLimit
         }
     }
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
-        if (ll < 3) {
-            return 36
-        } else if (lsd < 0) {
-            return 11 * 3
+        if (ll < 1 || lsd < 0) {
+            return this.oPNLClosingLimit
         } else {
-            return (lsd * 11) + 40
+            return (lsd * 11) + this.oPNLClosingLimit
         }
     }
 
@@ -245,6 +243,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<InvestmentAdvice[]> {
 
         this.currentInvestmentAdvices = []
+
+        if (ll < 0.01) {
+            this.oPNLClosingLimit = this.oPNLClosingLimit - 0.2
+        } else {
+            this.oPNLClosingLimit = 100
+        }
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
@@ -399,12 +403,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         }
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} - lsd: ${lsd.toFixed(2)}`, 2)
-
-        if (ll < 0.01) {
-            this.oPNLClosingLimit = this.oPNLClosingLimit - 0.2
-        } else {
-            this.oPNLClosingLimit = 100
-        }
 
         if (overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
