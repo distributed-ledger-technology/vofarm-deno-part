@@ -122,9 +122,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         this.logger.log(`we need to hedge ${valueToBeHedged}`, 1)
 
         if (valueToBeHedged > 100) {
-            this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', `we adjust the hedge`)
+            this.addInvestmentAdvice(Action.SELL, 0.01, 'BTCUSDT', `we adjust the hedge`)
         } else if (valueToBeHedged < -100) {
-            this.addInvestmentAdvice(Action.BUY, 0.001, 'BTCUSDT', `we adjust the hedge`)
+            this.addInvestmentAdvice(Action.BUY, 0.01, 'BTCUSDT', `we adjust the hedge`)
         }
 
     }
