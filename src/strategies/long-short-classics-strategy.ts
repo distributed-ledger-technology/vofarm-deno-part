@@ -123,14 +123,20 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         let valueToBeHedged = longValue - shortValue
         this.logger.log(`we need to hedge ${valueToBeHedged.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
 
-        if (valueToBeHedged > 300) {
-            this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', `we adjust the hedge`)
-            this.addInvestmentAdvice(Action.SELL, 0.01, 'ETHUSDT', `we adjust the hedge`)
-            this.addInvestmentAdvice(Action.SELL, 0.01, 'BNBUSDT', `we adjust the hedge`)
-        } else if (valueToBeHedged < -200) {
-            this.addInvestmentAdvice(Action.BUY, 0.001, 'BTCUSDT', `we adjust the hedge`)
-            this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', `we adjust the hedge`)
-            this.addInvestmentAdvice(Action.BUY, 0.01, 'BNBUSDT', `we adjust the hedge`)
+        if (valueToBeHedged > 400) {
+            for (const assetInfo of this.assetInfos) {
+                let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
+                if (shortPosition.data.unrealised_pnl < 0) {
+                    this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by short selling ${assetInfo.pair}`)
+                }
+            }
+        } else if (valueToBeHedged < -300) {
+            for (const assetInfo of this.assetInfos) {
+                let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
+                if (longPosition.data.unrealised_pnl < 0) {
+                    this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by buying ${assetInfo.pair}`)
+                }
+            }
         }
 
     }
