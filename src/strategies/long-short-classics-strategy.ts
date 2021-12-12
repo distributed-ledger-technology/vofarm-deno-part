@@ -123,19 +123,36 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         let valueToBeHedged = longValue - shortValue
         this.logger.log(`we need to hedge ${valueToBeHedged.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
 
+        let overallHedgeOptionFound = false
+
         if (valueToBeHedged > 400) {
+
             for (const assetInfo of this.assetInfos) {
                 let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
                 if (shortPosition.data.unrealised_pnl < 0) {
                     this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by short selling ${assetInfo.pair}`)
+                    overallHedgeOptionFound = true
                 }
             }
+
+            if (overallHedgeOptionFound === false) {
+                this.addInvestmentAdvice(Action.SELL, 0.1, 'SOLUSDT', `we emergency adjust the hedge by short selling SOLUSDT`)
+                this.addInvestmentAdvice(Action.SELL, 1, 'ICPUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
+            }
+
         } else if (valueToBeHedged < -300) {
+
             for (const assetInfo of this.assetInfos) {
                 let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
                 if (longPosition.data.unrealised_pnl < 0) {
                     this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by buying ${assetInfo.pair}`)
+                    overallHedgeOptionFound = true
                 }
+            }
+
+            if (overallHedgeOptionFound = false) {
+                this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
+                this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
             }
         }
 
