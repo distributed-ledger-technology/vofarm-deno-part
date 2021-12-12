@@ -375,15 +375,28 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 0.1 || overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else if (ll > 2) {
-            console.log(`lsd: ${lsd}`)
-            if (lsd > 60) {
-                const amountToBeShortSold = Number((longP.data.size - shortP.data.size).toFixed(assetInfo.decimalPlaces))
-                this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)
-            } else if (lsd < -60) {
-                const amountToBeBought = Number((shortP.data.size - longP.data.size).toFixed(assetInfo.decimalPlaces))
-                this.addInvestmentAdvice(Action.BUY, amountToBeBought, assetInfo.pair, `balancing ${assetInfo.pair} `)
-            }
             this.checkSetup(assetInfo, longP, shortP)
+            this.balance(assetInfo, longP, shortP, lsd)
+            this.narrow(assetInfo, longP, shortP)
+        }
+
+    }
+
+    protected async narrow(assetInfo: AssetInfo, longP: any, shortP: any) {
+        if (longP.data.unrealised_pnl < 0 && shortP.data.unrealised_pnl < 0) {
+            this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
+            this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
+        }
+    }
+
+    protected async balance(assetInfo: AssetInfo, longP: any, shortP: any, lsd: number) {
+        console.log(`lsd: ${lsd}`)
+        if (lsd > 60) {
+            const amountToBeShortSold = Number((longP.data.size - shortP.data.size).toFixed(assetInfo.decimalPlaces))
+            this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)
+        } else if (lsd < -60) {
+            const amountToBeBought = Number((shortP.data.size - longP.data.size).toFixed(assetInfo.decimalPlaces))
+            this.addInvestmentAdvice(Action.BUY, amountToBeBought, assetInfo.pair, `balancing ${assetInfo.pair} `)
         }
 
     }
