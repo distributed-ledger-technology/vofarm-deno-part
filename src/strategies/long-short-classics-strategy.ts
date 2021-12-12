@@ -182,7 +182,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd <= 0 && ll > 2) {
             aPL = 0
-        } else if (lsd < 80 && ll > 5) {
+        } else if (lsd < 80 && ll > 6) {
             aPL = lsd * -1
         }
 
@@ -197,7 +197,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (lsd >= 0 && ll > 5) {
             aPS = -1
-        } else if (lsd > -80 && ll > 6) {
+        } else if (lsd > -80 && ll > 7) {
             aPS = lsd
         }
 
@@ -210,7 +210,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 3) {
             return 36
         } else if (lsd < 0) {
-            return (lsd * -1 * 11) + 30
+            return (lsd * -1 * 11) + 50
         } else {
             return 3 * 11
         }
@@ -223,7 +223,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         } else if (lsd < 0) {
             return 11 * 3
         } else {
-            return (lsd * 11) + 30
+            return (lsd * 11) + 40
         }
     }
 
@@ -408,7 +408,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         if (overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
-        } else if (ll > 1) {
+        } else if (ll > 2) {
             this.checkSetup(assetInfo, longP, shortP)
             if (longP !== undefined && shortP !== undefined) {
                 if (ll > 3) {
