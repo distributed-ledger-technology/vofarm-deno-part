@@ -8,7 +8,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
-    protected oPNLClosingLimit: number = 30
+    protected oPNLClosingLimit: number = 100
     protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
     protected assetInfos: AssetInfo[] = [
@@ -368,7 +368,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         if (ll < 1) {
             this.oPNLClosingLimit = this.oPNLClosingLimit - 1
         } else {
-            this.oPNLClosingLimit = 30
+            this.oPNLClosingLimit = 100
         }
 
         if (ll < 0.1 || overallPNL > this.oPNLClosingLimit) {
