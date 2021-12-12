@@ -138,6 +138,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             if (overallHedgeOptionFound === false) {
                 this.addInvestmentAdvice(Action.SELL, 0.1, 'SOLUSDT', `we emergency adjust the hedge by short selling SOLUSDT`)
                 this.addInvestmentAdvice(Action.SELL, 1, 'ICPUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
+                this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
             }
 
         } else if (valueToBeHedged < -300) {
@@ -151,7 +152,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             }
 
             if (overallHedgeOptionFound === false) {
-                this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
+                this.addInvestmentAdvice(Action.BUY, 0.05, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
                 this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
             }
         }
