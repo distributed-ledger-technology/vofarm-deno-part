@@ -131,7 +131,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         this.fundamentals.positions = await exchangeConnector.getPositions()
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
-        const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(0)}} ***********`
+        const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(2)}} ***********`
         this.logger.log(message, 1)
 
     }
