@@ -204,50 +204,27 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected getAddingPointLong(lsd: number, ll: number): number {
 
-        let aPL = -1000000
-
-        if (lsd <= 0 && ll > 2) {
-            aPL = 0
-        } else if (lsd < 80 && ll > 2) {
-            aPL = lsd * -1
-        }
-
-        return aPL
+        return -1
 
     }
 
 
     protected getAddingPointShort(lsd: number, ll: number): number {
 
-        let aPS = -1000000
-
-        if (lsd >= 0 && ll > 5) {
-            aPS = -1
-        } else if (lsd > -80 && ll > 3) {
-            aPS = lsd
-        }
-
-        return aPS
+        return -2
 
     }
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
-        if (ll < 1 || lsd > 0) {
-            return this.oPNLClosingLimit
-        } else {
-            return (lsd * -1 * 11) + this.oPNLClosingLimit
-        }
+        return this.oPNLClosingLimit
     }
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
-        if (ll < 1 || lsd < 0) {
-            return this.oPNLClosingLimit
-        } else {
-            return (lsd * 11) + this.oPNLClosingLimit
-        }
+        return this.oPNLClosingLimit
     }
+
 
     protected isPreviousAdviceOlderThanXMinutes(minutes: number): boolean {
 
