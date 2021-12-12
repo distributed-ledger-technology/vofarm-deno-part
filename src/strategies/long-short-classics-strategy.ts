@@ -112,7 +112,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         }
 
         for (const move of Object.values(Action)) {
-            await sleep(0.002)
+            // await sleep(0.001)
             advicesForAsset = await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
             this.advices = this.advices.concat([...advicesForAsset])
         }
@@ -215,7 +215,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
             this.deriveSpecialMoves(assetInfo, ll, longP, shortP, lsd)
 
-        } else if (longP !== undefined && shortP !== undefined && this.currentInvestmentAdvices.length === 0) {
+        } else if (this.currentInvestmentAdvices.length === 0) {
 
             await this.deriveStandardMoves(assetInfo, move, lsd, ll, longP, shortP)
 
@@ -375,8 +375,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else if (ll > 2) {
             this.checkSetup(assetInfo, longP, shortP)
-            this.balance(assetInfo, longP, shortP, lsd)
-            this.narrow(assetInfo, longP, shortP)
+            if (longP !== undefined && shortP !== undefined) {
+                this.balance(assetInfo, longP, shortP, lsd)
+                this.narrow(assetInfo, longP, shortP)
+            } else {
+                console.log(`funny: ${assetInfo.pair}`)
+            }
         }
 
     }
