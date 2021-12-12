@@ -433,7 +433,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         } else if (ll > 2) {
             this.checkSetup(assetInfo, longP, shortP)
             if (longP !== undefined && shortP !== undefined) {
-                if (ll > 3) {
+                if (ll > 7) {
                     this.balance(assetInfo, longP, shortP, lsd)
                 }
                 this.narrow(assetInfo, longP, shortP)
