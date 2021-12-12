@@ -83,7 +83,12 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         this.advices = []
 
+        await this.hedgeItAll()
+
+        this.advices = this.advices.concat([...this.currentInvestmentAdvices])
+
         for (const assetInfo of this.assetInfos) {
+
 
             try {
                 await this.playAsset(assetInfo)
@@ -93,10 +98,36 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         }
 
+
         return this.advices
 
     }
 
+
+    protected async hedgeItAll() {
+        // .filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
+
+        let longValue = 0
+        let shortValue = 0
+
+        for (const position of this.fundamentals.positions) {
+            if (position.data.side === 'Buy') {
+                longValue = longValue + position.data.position_value
+            } else if (position.data.side === 'Sell') {
+                shortValue = shortValue + position.data.position_value
+            }
+        }
+
+        let valueToBeHedged = longValue - shortValue
+        this.logger.log(`we need to hedge ${valueToBeHedged}`, 1)
+
+        if (valueToBeHedged > 100) {
+            this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', `we adjust the hedge`)
+        } else if (valueToBeHedged < -100) {
+            this.addInvestmentAdvice(Action.BUY, 0.001, 'BTCUSDT', `we adjust the hedge`)
+        }
+
+    }
     protected async playAsset(assetInfo: AssetInfo): Promise<InvestmentAdvice[]> {
 
         let advicesForAsset: InvestmentAdvice[] = []
