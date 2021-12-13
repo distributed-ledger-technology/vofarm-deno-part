@@ -15,6 +15,7 @@ const apiSecret = Deno.args[1]
 const exchangeConnectorClassName = (Deno.args[2] === undefined) ? "BybitConnector" : Deno.args[2]
 const voFarmStrategyClassName = (Deno.args[3] === undefined) ? "LongShortExploitStrategy" : Deno.args[3]
 const loggerClassName = (Deno.args[4] === undefined) ? 'VFLogger' : Deno.args[4]
+const logLevel = (Deno.args[5] === undefined) ? 1 : Number(Deno.args[5])
 
 const registryVoFarmStrategies = new Registry()
 const registryExchangeConnectors = new Registry()
@@ -30,7 +31,7 @@ registryExchangeConnectors.register(BybitConnector)
 registryLoggerServices.register(VFLogger)
 
 const exchangeConnector: IExchangeConnector = new (registryExchangeConnectors.get(exchangeConnectorClassName))(apiKey, apiSecret)
-const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, 0)
+const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, logLevel)
 const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
