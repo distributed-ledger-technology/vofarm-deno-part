@@ -83,7 +83,11 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
         this.advices = []
 
-        await this.hedgeItAll()
+        try {
+            await this.hedgeItAll()
+        } catch (error) {
+            this.logger.log(`strange situation while hedging it all`, 2)
+        }
 
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
@@ -186,6 +190,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
+        // console.log(this.fundamentals.accountInfo)
 
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
 

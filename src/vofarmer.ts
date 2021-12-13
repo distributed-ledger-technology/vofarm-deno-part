@@ -64,6 +64,7 @@ export class VolatilityFarmer {
         await this.logger.log(message)
 
         for (const investmentAdvice of investmentAdvices) {
+            sleep(0.2)
             let r
 
             if (investmentAdvice.action === Action.BUY) {
