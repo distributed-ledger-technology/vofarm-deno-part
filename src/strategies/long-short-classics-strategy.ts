@@ -91,9 +91,9 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
             try {
-                await this.playAsset(assetInfo)
+                await this.playAsset(assetInfo, input.exchangeConnector)
             } catch (error) {
-                this.logger.log(`strange situation while playing ${assetInfo.pair}`, 2)
+                this.logger.log(`strange situation while playing ${assetInfo.pair}: ${error}`, 2)
             }
 
         }
@@ -158,7 +158,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         }
 
     }
-    protected async playAsset(assetInfo: AssetInfo): Promise<InvestmentAdvice[]> {
+    protected async playAsset(assetInfo: AssetInfo, exchangeConnector: IExchangeConnector): Promise<InvestmentAdvice[]> {
 
         let advicesForAsset: InvestmentAdvice[] = []
 
@@ -169,7 +169,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
 
         if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
-            throw new Error(`you should adjust the leverage for ${longPosition.data.symbol}`)
+            await exchangeConnector.setLeverage(assetInfo.pair, 25)
         }
 
         for (const move of Object.values(Action)) {
@@ -185,8 +185,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
-        const rateLimitHandlingToBeSafeTemp = await exchangeConnector.getFuturesAccountData()
-        console.log(rateLimitHandlingToBeSafeTemp)
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
 
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
@@ -424,12 +422,16 @@ export abstract class LongShortClassics implements VoFarmStrategy {
             this.logger.log(error.message, 2)
         }
 
+        if (longP === undefined || shortP === undefined) {
+            this.checkSetup(assetInfo, longP, shortP)
+            return
+        }
+
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} (l: ${longP.data.unrealised_pnl.toFixed(2)} s: ${shortP.data.unrealised_pnl.toFixed(2)}) - lsd: ${lsd.toFixed(2)}`, 2)
 
         if (overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else if (ll > 2) {
-            this.checkSetup(assetInfo, longP, shortP)
             if (longP !== undefined && shortP !== undefined) {
                 if (ll > 7) {
                     this.balance(assetInfo, longP, shortP, lsd)
