@@ -160,7 +160,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             }
 
             if (overallHedgeOptionFound === false) {
-                this.addInvestmentAdvice(Action.BUY, 0.06, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
+                this.addInvestmentAdvice(Action.BUY, 0.1, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
                 this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
             }
         }
