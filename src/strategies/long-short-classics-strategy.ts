@@ -82,7 +82,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.advices = []
 
         try {
-            await this.hedgeItAll()
+            this.hedgeItAll()
         } catch (error) {
             this.logger.log(`strange situation while hedging it all`, 2)
         }
@@ -105,28 +105,25 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
 
-    protected async hedgeItAll() {
-        // .filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
+    protected hedgeItAll(): void {
 
         let longValue = 0
         let shortValue = 0
 
         for (const position of this.fundamentals.positions) {
-            if (position.data.symbol !== 'ENSUSDT') { // we do not need to hedge this :) 
-                if (position.data.side === 'Buy') {
-                    longValue = longValue + position.data.position_value
-                } else if (position.data.side === 'Sell') {
-                    shortValue = shortValue + position.data.position_value
-                }
+            if (position.data.side === 'Buy') {
+                longValue = longValue + position.data.position_value
+            } else if (position.data.side === 'Sell') {
+                shortValue = shortValue + position.data.position_value
             }
         }
 
-        let valueToBeHedged = longValue - shortValue
-        this.logger.log(`we need to hedge ${valueToBeHedged.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
+        let overallLSD = longValue - shortValue
+        this.logger.log(`overallLSD: ${overallLSD.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
 
         let overallHedgeOptionFound = false
 
-        if (valueToBeHedged > 400) {
+        if (overallLSD > 10000) {
 
             for (const assetInfo of this.assetInfos) {
                 let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
@@ -137,12 +134,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             }
 
             if (overallHedgeOptionFound === false) {
-                this.addInvestmentAdvice(Action.SELL, 0.1, 'SOLUSDT', `we emergency adjust the hedge by short selling SOLUSDT`)
-                this.addInvestmentAdvice(Action.SELL, 1, 'ICPUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
-                this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
+                this.addInvestmentAdvice(Action.SELL, 0.2, 'SOLUSDT', `we emergency adjust the hedge by short selling SOLUSDT`)
+                this.addInvestmentAdvice(Action.SELL, 2, 'ICPUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
+                this.addInvestmentAdvice(Action.SELL, 2, 'DOGEUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
             }
 
-        } else if (valueToBeHedged < -300) {
+        } else if (overallLSD < 0) {
 
             for (const assetInfo of this.assetInfos) {
                 let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
@@ -153,12 +150,14 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             }
 
             if (overallHedgeOptionFound === false) {
-                this.addInvestmentAdvice(Action.BUY, 0.05, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
+                this.addInvestmentAdvice(Action.BUY, 0.06, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
                 this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
             }
         }
 
     }
+
+
     protected async playAsset(assetInfo: AssetInfo, exchangeConnector: IExchangeConnector): Promise<InvestmentAdvice[]> {
 
         let advicesForAsset: InvestmentAdvice[] = []
@@ -264,7 +263,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.currentInvestmentAdvices = []
 
         if (ll < 0.01) {
-            this.oPNLClosingLimit = this.oPNLClosingLimit - 0.2
+            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
         } else {
             this.oPNLClosingLimit = 100
         }
@@ -367,18 +366,19 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
     }
 
+
     protected deriveSpecialMoves(assetInfo: AssetInfo, ll: number, longP: any, shortP: any, lsd: number): void {
+
+        if (longP === undefined || shortP === undefined) {
+            this.ensureLongShortSetup(assetInfo, longP, shortP)
+            return
+        }
 
         let overallPNL = 0
         try {
             overallPNL = FinancialCalculator.getOverallPNLInPercent(longP, shortP)
         } catch (error) {
             this.logger.log(error.message, 2)
-        }
-
-        if (longP === undefined || shortP === undefined) {
-            this.ensureLongShortSetup(assetInfo, longP, shortP)
-            return
         }
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} (l: ${longP.data.unrealised_pnl.toFixed(2)} s: ${shortP.data.unrealised_pnl.toFixed(2)}) - lsd: ${lsd.toFixed(2)}`, 2)
@@ -391,6 +391,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             } else {
                 this.logger.log(`funny: ${assetInfo.pair}`, 2)
             }
+        } else if (this.oPNLClosingLimit < 36) {
+            this.addInvestmentAdvice(Action.REDUCELONG, 10, 'ENSUSDT', `we emergency sell some ENSUSDT`)
         }
 
     }
