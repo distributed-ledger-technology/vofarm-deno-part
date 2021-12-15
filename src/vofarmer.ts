@@ -15,8 +15,8 @@ export class VolatilityFarmer {
         setInterval(async () => {
 
             try {
+                await sleep(Math.round(Math.random() * (2200 - 1) + 1) / 1000)
                 await this.playTheGame()
-                sleep(Math.round(Math.random() * (2200 - 1) + 1) / 1000)
             } catch (error) {
                 this.logger.log(error.message, 2)
             }
@@ -46,7 +46,8 @@ export class VolatilityFarmer {
         await this.logger.log(JSON.stringify(investmentAdvices), LogLevel.INFO)
 
         for (const investmentAdvice of investmentAdvices) {
-            sleep(0.2)
+            await sleep(Math.round(Math.random() * (200 - 50) + 50) / 1000)
+
             let r
 
             if (investmentAdvice.action === Action.BUY) {
