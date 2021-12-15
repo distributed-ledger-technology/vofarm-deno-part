@@ -89,6 +89,15 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
+        this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
+
+        if (this.liquidityLevel < 0.01) {
+            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
+        } else {
+            this.oPNLClosingLimit = 100
+        }
+
+
         for (const assetInfo of this.assetInfos) {
 
             try {
@@ -162,18 +171,16 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         let advicesForAsset: InvestmentAdvice[] = []
 
-        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
-        let liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-
         let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
         let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
+        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
 
         if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
             await exchangeConnector.setLeverage(assetInfo.pair, 25)
         }
 
         for (const move of Object.values(Action)) {
-            advicesForAsset = await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
+            advicesForAsset = await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, this.liquidityLevel, longPosition, shortPosition)
             this.advices = this.advices.concat([...advicesForAsset])
         }
 
@@ -261,12 +268,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected async deriveInvestmentAdvice(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<InvestmentAdvice[]> {
 
         this.currentInvestmentAdvices = []
-
-        if (ll < 0.01) {
-            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
-        } else {
-            this.oPNLClosingLimit = 100
-        }
 
         if (move === Action.PAUSE) { // here just to ensure the following block is executed only once
 
