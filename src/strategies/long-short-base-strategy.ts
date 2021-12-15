@@ -219,7 +219,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let aPL = this.getAddingPointLong(lsd, ll)
 
-                await this.logger.log(`adding point long: ${aPL.toFixed(2)} (${pnlLong})`)
+                await this.logger.log(`adding point long: ${aPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
                 if (pnlLong < aPL) {
                     let factor = Math.floor(Math.abs(lsd) / 10)
@@ -239,7 +239,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let aPS = this.getAddingPointShort(lsd, ll)
 
-                await this.logger.log(`adding point short: ${aPS.toFixed(2)} (${pnlShort})`)
+                await this.logger.log(`adding point short: ${aPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
                 if (pnlShort < aPS) {
 
@@ -259,7 +259,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let cPL = this.getClosingPointLong(lsd, ll)
 
-                await this.logger.log(`closing point long: ${cPL.toFixed(2)} (${pnlLong})`)
+                await this.logger.log(`closing point long: ${cPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
                 if (pnlLong > cPL && longP !== undefined && longP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} long position to realize ${pnlLong}% profits`
@@ -276,7 +276,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
                 let cPS = this.getClosingPointShort(lsd, ll)
 
-                await this.logger.log(`closing point short: ${cPS.toFixed(2)} (${pnlShort})`)
+                await this.logger.log(`closing point short: ${cPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
                 if (pnlShort > cPS && shortP !== undefined && shortP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} short position to realize ${pnlShort}% profits`

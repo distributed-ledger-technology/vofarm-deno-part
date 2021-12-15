@@ -1,5 +1,5 @@
 import { IExchangeConnector } from "../../deps.ts";
-import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
+import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy, LogLevel } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
 
@@ -360,7 +360,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
                 let aPL = this.getAddingPointLong(lsd, ll)
 
-                this.logger.log(`${assetInfo.pair} aPL: ${aPL.toFixed(2)} (${pnlLong})`)
+                this.logger.log(`${assetInfo.pair} aPL: ${aPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
                 if (pnlLong < aPL) {
                     let factor = Math.floor(Math.abs(lsd) / 10)
@@ -380,7 +380,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
                 let aPS = this.getAddingPointShort(lsd, ll)
 
-                this.logger.log(`${assetInfo.pair} aPS: ${aPS.toFixed(2)} (${pnlShort})`)
+                this.logger.log(`${assetInfo.pair} aPS: ${aPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
                 if (pnlShort < aPS) {
 
@@ -400,7 +400,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
                 let cPL = this.getClosingPointLong(lsd, ll)
 
-                this.logger.log(`${assetInfo.pair} cPL: ${cPL.toFixed(2)} (${pnlLong})`)
+                this.logger.log(`${assetInfo.pair} cPL: ${cPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
                 if (pnlLong > cPL && longP !== undefined && longP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} long position to realize ${pnlLong}% profits`
@@ -417,7 +417,7 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
                 let cPS = this.getClosingPointShort(lsd, ll)
 
-                this.logger.log(`${assetInfo.pair} cPS: ${cPS.toFixed(2)} (${pnlShort})`)
+                this.logger.log(`${assetInfo.pair} cPS: ${cPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
                 if (pnlShort > cPS && shortP !== undefined && shortP.data.size > assetInfo.minTradingAmount) {
                     const reason = `we reduce our ${assetInfo.pair} short position to realize ${pnlShort}% profits`
