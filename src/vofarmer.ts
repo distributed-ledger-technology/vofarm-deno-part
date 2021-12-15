@@ -1,8 +1,7 @@
 import { IExchangeConnector, sleep } from "../deps.ts"
 import { InvestmentAdvice } from "./interfaces/investment-advice.ts"
-import { VoFarmStrategy } from "./interfaces/vofarm-strategy.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
-import { Action, LogLevel } from "../mod.ts";
+import { Action, LogLevel, VoFarmStrategy } from "../mod.ts"
 
 
 export class VolatilityFarmer {
@@ -32,7 +31,6 @@ export class VolatilityFarmer {
 
         const investmentAdvices = await this.voFarmStrategy.getInvestmentAdvices(inputForStrategy)
         this.logger.log(investmentAdvices.length.toString(), LogLevel.INFO)
-        await sleep(0.1)
         await this.applyInvestmentAdvices(investmentAdvices)
 
     }

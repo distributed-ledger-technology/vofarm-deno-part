@@ -3,17 +3,13 @@ import { VolatilityFarmer } from "./vofarmer.ts"
 import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
 import { VFLogger } from "./utilities/logger.ts"
-import { LongShortBaseBTCStrategy } from "./strategies/long-short-base-btc-strategy.ts";
-import { LongShortBaseETHStrategy } from "./strategies/long-short-base-eth-strategy.ts";
-import { LongShortBaseBNBStrategy } from "./strategies/long-short-base-bnb-strategy.ts";
-import { LongShortBaseCombinedStrategy } from "./strategies/long-short-base-combined-strategy.ts";
 import { LongShortClassics } from "./strategies/long-short-classics-strategy.ts";
 
 const apiKey = Deno.args[0]
 const apiSecret = Deno.args[1]
 
 const exchangeConnectorClassName = (Deno.args[2] === undefined) ? "BybitConnector" : Deno.args[2]
-const voFarmStrategyClassName = (Deno.args[3] === undefined) ? "LongShortExploitStrategy" : Deno.args[3]
+const voFarmStrategyClassName = (Deno.args[3] === undefined) ? "LongShortClassics" : Deno.args[3]
 const loggerClassName = (Deno.args[4] === undefined) ? 'VFLogger' : Deno.args[4]
 const logLevel = (Deno.args[5] === undefined) ? 1 : Number(Deno.args[5])
 const intervalLengthInSeconds = (Deno.args[6] === undefined) ? 11 : Number(Deno.args[6])
@@ -22,12 +18,7 @@ const registryVoFarmStrategies = new Registry()
 const registryExchangeConnectors = new Registry()
 const registryLoggerServices = new Registry()
 
-registryVoFarmStrategies.register(LongShortBaseETHStrategy)
-registryVoFarmStrategies.register(LongShortBaseBTCStrategy)
-registryVoFarmStrategies.register(LongShortBaseBNBStrategy)
 registryVoFarmStrategies.register(LongShortClassics)
-registryVoFarmStrategies.register(LongShortBaseCombinedStrategy)
-
 registryExchangeConnectors.register(BybitConnector)
 registryLoggerServices.register(VFLogger)
 

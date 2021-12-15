@@ -1,13 +1,13 @@
 import { IExchangeConnector } from "../../deps.ts";
-import { Action, InvestmentAdvice, AssetInfo, IVoFarmStrategy, LogLevel } from "../../mod.ts"
+import { Action, InvestmentAdvice, AssetInfo, LogLevel } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
-import { VFLogger } from "../utilities/logger.ts"
+import { VFLogger } from "../utilities/logger.ts";
+
+import { VoFarmStrategy } from "./vofarm-strategy.ts";
 
 
-export abstract class LongShortClassics implements IVoFarmStrategy {
+export abstract class LongShortClassics extends VoFarmStrategy {
 
-    protected currentInvestmentAdvices: InvestmentAdvice[] = []
-    protected lastAdviceDate: Date = new Date()
     protected oPNLClosingLimit: number = 100
     protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
@@ -65,12 +65,10 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
         // { pair: "HNTUSDT", minTradingAmount: 1 },
         // { pair: "MKRUSDT", minTradingAmount: 1 },
     ]
-    protected liquidityLevel = 0
-    protected fundamentals: any = {}
 
-    public constructor(private logger: VFLogger) { }
-
-    public abstract setAssetInfo(assetInfo: AssetInfo): void
+    public constructor(logger: VFLogger) {
+        super(logger)
+    }
 
     public async getInvestmentAdvices(input: any): Promise<InvestmentAdvice[]> {
 
@@ -92,7 +90,6 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
         for (const assetInfo of this.assetInfos) {
-
 
             try {
                 await this.playAsset(assetInfo, input.exchangeConnector)
@@ -184,24 +181,6 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
 
         return this.advices
 
-    }
-
-    protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
-
-        this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
-
-        if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
-
-        this.fundamentals.positions = await exchangeConnector.getPositions()
-        this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-
-        const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(2)}} ***********`
-        this.logger.log(message, 1)
-
-    }
-
-    public getAssetInfo(): AssetInfo {
-        return this.assetInfo
     }
 
 
@@ -305,51 +284,6 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
     }
 
 
-    protected closeAll(AssetInfo: AssetInfo, specificmessage: string, longP: any, shortP: any): void {
-
-        if (longP !== undefined) {
-
-            this.addInvestmentAdvice(Action.REDUCELONG, Number((longP.data.size).toFixed(3)), AssetInfo.pair, `we close ${longP.data.size} ${AssetInfo.pair} long due to ${specificmessage}`)
-        }
-
-        if (shortP !== undefined) {
-
-            this.addInvestmentAdvice(Action.REDUCESHORT, Number((shortP.data.size).toFixed(3)), AssetInfo.pair, `we close ${shortP.data.size} ${AssetInfo.pair} short due to ${specificmessage}`)
-
-        }
-
-    }
-
-
-    protected addInvestmentAdvice(action: Action, amount: number, pair: string, reason: string): void {
-
-        const investmentAdvice: InvestmentAdvice = {
-            action,
-            amount,
-            pair,
-            reason
-        }
-
-        this.currentInvestmentAdvices.push(investmentAdvice)
-
-        this.lastAdviceDate = new Date()
-
-    }
-
-    protected checkSetup(AssetInfo: AssetInfo, longP: any, shortP: any): void {
-        if (longP === undefined) {
-
-            this.addInvestmentAdvice(Action.BUY, AssetInfo.minTradingAmount, AssetInfo.pair, `we open a ${AssetInfo.pair} long position to play the game`)
-
-        }
-
-        if (shortP === undefined) {
-
-            this.addInvestmentAdvice(Action.SELL, AssetInfo.minTradingAmount, AssetInfo.pair, `we open a ${AssetInfo.pair} short position to play the game`)
-
-        }
-    }
-
     protected async deriveStandardMoves(assetInfo: AssetInfo, move: Action, lsd: number, ll: number, longP: any, shortP: any): Promise<void> {
 
         switch (move) {
@@ -443,7 +377,7 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
         }
 
         if (longP === undefined || shortP === undefined) {
-            this.checkSetup(assetInfo, longP, shortP)
+            this.ensureLongShortSetup(assetInfo, longP, shortP)
             return
         }
 
@@ -453,34 +387,10 @@ export abstract class LongShortClassics implements IVoFarmStrategy {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
         } else if (ll > 2) {
             if (longP !== undefined && shortP !== undefined) {
-                if (ll > 7) {
-                    this.balance(assetInfo, longP, shortP, lsd)
-                }
-                this.narrow(assetInfo, longP, shortP)
+                this.narrowLongShortDiffPNL(assetInfo, longP, shortP)
             } else {
                 this.logger.log(`funny: ${assetInfo.pair}`, 2)
             }
-        }
-
-    }
-
-    protected async narrow(assetInfo: AssetInfo, longP: any, shortP: any) {
-        if (longP.data.unrealised_pnl < 0 && shortP.data.unrealised_pnl < 0) {
-            this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
-            this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
-        }
-    }
-
-    protected async balance(assetInfo: AssetInfo, longP: any, shortP: any, lsd: number) {
-        if (assetInfo.pair === "ENSUSDT") {
-            this.logger.log(lsd.toString(), 2)
-        }
-        if (lsd > 60) {
-            const amountToBeShortSold = Number((longP.data.size - shortP.data.size).toFixed(assetInfo.decimalPlaces))
-            this.addInvestmentAdvice(Action.SELL, amountToBeShortSold, assetInfo.pair, `balancing ${assetInfo.pair} `)
-        } else if (lsd < -60) {
-            const amountToBeBought = Number((shortP.data.size - longP.data.size).toFixed(assetInfo.decimalPlaces))
-            this.addInvestmentAdvice(Action.BUY, amountToBeBought, assetInfo.pair, `balancing ${assetInfo.pair} `)
         }
 
     }
