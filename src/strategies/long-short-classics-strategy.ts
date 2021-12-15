@@ -9,6 +9,7 @@ import { VoFarmStrategy } from "./vofarm-strategy.ts";
 export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected oPNLClosingLimit: number = 100
+    protected overallLSD: number = 0
     protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
     protected assetInfos: AssetInfo[] = [
@@ -82,6 +83,20 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
         this.advices = []
 
+        let longValue = 0
+        let shortValue = 0
+
+        for (const position of this.fundamentals.positions) {
+            if (position.data.side === 'Buy') {
+                longValue = longValue + position.data.position_value
+            } else if (position.data.side === 'Sell') {
+                shortValue = shortValue + position.data.position_value
+            }
+        }
+
+        this.overallLSD = longValue - shortValue
+        this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
+
         try {
             if (this.liquidityLevel > 1) {
                 this.hedgeItAll()
@@ -117,23 +132,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected hedgeItAll(): void {
 
-        let longValue = 0
-        let shortValue = 0
-
-        for (const position of this.fundamentals.positions) {
-            if (position.data.side === 'Buy') {
-                longValue = longValue + position.data.position_value
-            } else if (position.data.side === 'Sell') {
-                shortValue = shortValue + position.data.position_value
-            }
-        }
-
-        let overallLSD = longValue - shortValue
-        this.logger.log(`overallLSD: ${overallLSD.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
-
         let overallHedgeOptionFound = false
 
-        if (overallLSD > 10000) {
+        if (this.overallLSD > 10000) {
 
             for (const assetInfo of this.assetInfos) {
                 let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
@@ -149,7 +150,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 this.addInvestmentAdvice(Action.SELL, 2, 'DOGEUSDT', `we emergency adjust the hedge by short selling ICPUSDT`)
             }
 
-        } else if (overallLSD < 0) {
+        } else if (this.overallLSD < 0) {
 
             for (const assetInfo of this.assetInfos) {
                 let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
