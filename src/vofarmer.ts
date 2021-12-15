@@ -1,12 +1,12 @@
 import { IExchangeConnector, sleep } from "../deps.ts"
 import { InvestmentAdvice } from "./interfaces/investment-advice.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
-import { Action, LogLevel, VoFarmStrategy } from "../mod.ts"
+import { Action, IVoFarmStrategy, LogLevel } from "../mod.ts"
 
 
 export class VolatilityFarmer {
 
-    public constructor(private exchangeConnector: IExchangeConnector, private voFarmStrategy: VoFarmStrategy, private logger: IVFLogger) { }
+    public constructor(private exchangeConnector: IExchangeConnector, private voFarmStrategy: IVoFarmStrategy, private logger: IVFLogger) { }
 
     public async farm(intervalLengthInSeconds: number): Promise<void> {
 

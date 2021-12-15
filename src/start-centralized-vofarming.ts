@@ -24,9 +24,9 @@ registryLoggerServices.register(VFLogger)
 
 const exchangeConnector: IExchangeConnector = new (registryExchangeConnectors.get(exchangeConnectorClassName))(apiKey, apiSecret)
 const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, logLevel)
-const voFarmStrategies: IVoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
+const voFarmStrategy: IVoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
 
-const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
+const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategy, vfLogger)
 
 volatilityFarmer.farm(intervalLengthInSeconds)
 
