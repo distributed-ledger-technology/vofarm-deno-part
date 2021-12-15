@@ -196,7 +196,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             if (lsd < 0) {
                 return -1
             } else {
-                return (lsd * -5) - 11
+                return (lsd * -3) - 11
             }
         }
         return -200000
@@ -209,7 +209,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             if (lsd > 0) {
                 return -1
             } else {
-                return (Math.abs(lsd) * -5) - 11
+                return (Math.abs(lsd) * -3) - 11
             }
 
         }
