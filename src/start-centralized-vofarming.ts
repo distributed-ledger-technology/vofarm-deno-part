@@ -1,4 +1,4 @@
-import { VoFarmStrategy } from "./interfaces/vofarm-strategy.ts"
+import { IVoFarmStrategy } from "./interfaces/vofarm-strategy.ts"
 import { VolatilityFarmer } from "./vofarmer.ts"
 import { BybitConnector, IExchangeConnector, Registry } from "../deps.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
@@ -33,7 +33,7 @@ registryLoggerServices.register(VFLogger)
 
 const exchangeConnector: IExchangeConnector = new (registryExchangeConnectors.get(exchangeConnectorClassName))(apiKey, apiSecret)
 const vfLogger: IVFLogger = new (registryLoggerServices.get(loggerClassName))(apiKey, logLevel)
-const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
+const voFarmStrategies: IVoFarmStrategy = new (registryVoFarmStrategies.get(voFarmStrategyClassName))(vfLogger)
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
 

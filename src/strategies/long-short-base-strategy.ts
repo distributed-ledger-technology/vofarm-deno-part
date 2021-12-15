@@ -1,10 +1,10 @@
 import { IExchangeConnector, sleep } from "../../deps.ts";
-import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy, LogLevel } from "../../mod.ts"
+import { Action, InvestmentAdvice, AssetInfo, IVoFarmStrategy, LogLevel } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
 
 
-export abstract class LongShortBaseStrategy implements VoFarmStrategy {
+export abstract class LongShortBaseStrategy implements IVoFarmStrategy {
 
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
