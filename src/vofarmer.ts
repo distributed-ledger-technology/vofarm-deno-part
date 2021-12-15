@@ -1,23 +1,11 @@
 import { IExchangeConnector, sleep } from "../deps.ts"
-import { Action } from "./interfaces/action.ts"
 import { InvestmentAdvice } from "./interfaces/investment-advice.ts"
 import { VoFarmStrategy } from "./interfaces/vofarm-strategy.ts"
 import { IVFLogger } from "./interfaces/logger.ts"
-
-
-export interface IActiveProcess {
-    apiKey: string,
-    exchangeConnector: IExchangeConnector,
-    intervalId: number,
-    iterationCounter: number
-    pair: string
-    tradingAmount: number
-}
+import { Action, LogLevel } from "../mod.ts";
 
 
 export class VolatilityFarmer {
-
-    public static activeProcesses: IActiveProcess[] = []
 
     public constructor(private exchangeConnector: IExchangeConnector, private voFarmStrategy: VoFarmStrategy, private logger: IVFLogger) { }
 
@@ -28,14 +16,10 @@ export class VolatilityFarmer {
         setInterval(async () => {
 
             try {
-
                 await this.playTheGame()
                 sleep(Math.round(Math.random() * (2200 - 1) + 1) / 1000)
-
             } catch (error) {
-
-                console.log(error.message)
-
+                this.logger.log(error.message, 2)
             }
 
         }, intervalLengthInSeconds * 1000)
@@ -47,7 +31,7 @@ export class VolatilityFarmer {
         let inputForStrategy = { exchangeConnector: this.exchangeConnector }
 
         const investmentAdvices = await this.voFarmStrategy.getInvestmentAdvices(inputForStrategy)
-        console.log(investmentAdvices.length)
+        this.logger.log(investmentAdvices.length.toString(), LogLevel.INFO)
         await sleep(0.1)
         await this.applyInvestmentAdvices(investmentAdvices)
 
@@ -60,8 +44,8 @@ export class VolatilityFarmer {
     protected async applyInvestmentAdvices(investmentAdvices: InvestmentAdvice[]): Promise<void> {
 
         const message = `applying ${investmentAdvices.length} investment advices`
-        console.log(JSON.stringify(investmentAdvices))
-        await this.logger.log(message)
+        await this.logger.log(message, LogLevel.INFO)
+        await this.logger.log(JSON.stringify(investmentAdvices), LogLevel.INFO)
 
         for (const investmentAdvice of investmentAdvices) {
             sleep(0.2)

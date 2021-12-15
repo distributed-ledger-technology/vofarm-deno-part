@@ -1,5 +1,5 @@
 import { IExchangeConnector, sleep } from "../../deps.ts";
-import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
+import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy, LogLevel } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
 
@@ -57,7 +57,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
         const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(0)}} ***********`
-        console.log(message)
+        this.logger.log(message, LogLevel.INFO)
 
     }
 
@@ -141,7 +141,7 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
 
         if (this.lastAdviceDate < refDate) {
             const message = `lastAdviceDate :${this.lastAdviceDate} vs. refDate: ${refDate}`
-            console.log(message)
+            this.logger.log(message, LogLevel.INFO)
             return true
         }
 
@@ -298,12 +298,13 @@ export abstract class LongShortBaseStrategy implements VoFarmStrategy {
         try {
             overallPNL = FinancialCalculator.getOverallPNLInPercent(longP, shortP)
         } catch (error) {
-            console.log(error.message)
+            this.logger.log(error, LogLevel.ERROR)
         }
 
         this.oPNLClosingLimit = Math.round(Math.random() * (81 - 36) + 36)
 
-        console.log(`${assetInfo.pair}: - overallPNL: ${overallPNL} vs. oPNLClosingLimit: ${this.oPNLClosingLimit} vs. liquidityLevel: ${ll}`)
+        const message = `${assetInfo.pair}: - overallPNL: ${overallPNL} vs. oPNLClosingLimit: ${this.oPNLClosingLimit} vs. liquidityLevel: ${ll}`
+        this.logger.log(message, LogLevel.INFO)
 
         this.checkSetup(assetInfo, longP, shortP)
 

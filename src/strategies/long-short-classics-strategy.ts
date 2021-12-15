@@ -1,4 +1,4 @@
-import { IExchangeConnector, sleep } from "../../deps.ts";
+import { IExchangeConnector } from "../../deps.ts";
 import { Action, InvestmentAdvice, AssetInfo, VoFarmStrategy } from "../../mod.ts"
 import { FinancialCalculator } from "../utilities/financial-calculator.ts"
 import { VFLogger } from "../utilities/logger.ts"
@@ -177,7 +177,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
         }
 
         for (const move of Object.values(Action)) {
-            // await sleep(0.001)
             advicesForAsset = await this.deriveInvestmentAdvice(assetInfo, move, longShortDeltaInPercent, liquidityLevel, longPosition, shortPosition)
             this.advices = this.advices.concat([...advicesForAsset])
         }
@@ -190,7 +189,6 @@ export abstract class LongShortClassics implements VoFarmStrategy {
     protected async collectFundamentals(exchangeConnector: IExchangeConnector) {
 
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
-        // console.log(this.fundamentals.accountInfo)
 
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
 
@@ -235,18 +233,35 @@ export abstract class LongShortClassics implements VoFarmStrategy {
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
+        let cPL = 0
         if (lsd > 0) {
-            return this.oPNLClosingLimit - lsd + ll
+            cPL = this.oPNLClosingLimit - lsd + ll
+        } else {
+            cPL = this.oPNLClosingLimit + Math.abs(lsd) + ll
         }
-        return this.oPNLClosingLimit + lsd + ll
+
+        if (cPL < 24) {
+            cPL = 200000
+        }
+
+        return cPL
     }
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
+        let cPS = 0
+
         if (lsd < 0) {
-            return this.oPNLClosingLimit - Math.abs(lsd) + ll
+            cPS = this.oPNLClosingLimit - Math.abs(lsd) + ll
+        } else {
+            cPS = this.oPNLClosingLimit + lsd + ll
         }
-        return this.oPNLClosingLimit + Math.abs(lsd) + ll
+
+        if (cPS < 24) {
+            cPS = 200000
+        }
+
+        return cPS
     }
 
 

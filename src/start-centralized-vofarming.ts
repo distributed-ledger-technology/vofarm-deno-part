@@ -16,6 +16,7 @@ const exchangeConnectorClassName = (Deno.args[2] === undefined) ? "BybitConnecto
 const voFarmStrategyClassName = (Deno.args[3] === undefined) ? "LongShortExploitStrategy" : Deno.args[3]
 const loggerClassName = (Deno.args[4] === undefined) ? 'VFLogger' : Deno.args[4]
 const logLevel = (Deno.args[5] === undefined) ? 1 : Number(Deno.args[5])
+const intervalLengthInSeconds = (Deno.args[6] === undefined) ? 11 : Number(Deno.args[6])
 
 const registryVoFarmStrategies = new Registry()
 const registryExchangeConnectors = new Registry()
@@ -36,6 +37,5 @@ const voFarmStrategies: VoFarmStrategy = new (registryVoFarmStrategies.get(voFar
 
 const volatilityFarmer: VolatilityFarmer = new VolatilityFarmer(exchangeConnector, voFarmStrategies, vfLogger)
 
-const intervalLengthInSeconds = 11
 volatilityFarmer.farm(intervalLengthInSeconds)
 

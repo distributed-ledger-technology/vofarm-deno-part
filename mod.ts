@@ -1,4 +1,4 @@
-export * from "./src/interfaces/action.ts"
+export * from "./src/constants/enums.ts"
 export * from "./src/interfaces/investment-advice.ts"
 export * from "./src/interfaces/investment-decision-base-long-short-exploit.ts"
 export * from "./src/interfaces/investment-option.ts"
