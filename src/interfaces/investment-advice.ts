@@ -1,5 +1,5 @@
 
-import { Action } from "./action.ts"
+import { Action } from "../constants/enums.ts"
 
 export interface InvestmentAdvice {
     action: Action,
