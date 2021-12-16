@@ -144,11 +144,11 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 }
             }
 
-            if (overallHedgeOptionFound === false) {
+            if (overallHedgeOptionFound === false && this.overallLSD > 10000) {
                 this.addInvestmentAdvice(Action.SELL, 0.01, 'BTCUSDT', `we emergency adjust the hedge by short selling BTCUSDT`)
             }
 
-        } else if (this.overallLSD < 0) {
+        } else if (this.overallLSD < 1500) {
 
             for (const assetInfo of this.assetInfos) {
                 let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
@@ -158,7 +158,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 }
             }
 
-            if (overallHedgeOptionFound === false) {
+            if (overallHedgeOptionFound === false && this.overallLSD < 0) {
                 this.addInvestmentAdvice(Action.BUY, 0.1, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
                 this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
             }
