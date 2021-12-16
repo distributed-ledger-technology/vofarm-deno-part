@@ -191,7 +191,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getAddingPointLong(lsd: number, ll: number): number {
-        if (ll > 1) {
+        if (ll > 0.5) {
             if (lsd < 0) {
                 return -1
             } else {
@@ -204,7 +204,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getAddingPointShort(lsd: number, ll: number): number {
-        if (ll > 1) {
+        if (ll > 0.5) {
             if (lsd > 0) {
                 return -1
             } else {
@@ -386,7 +386,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         if (overallPNL > this.oPNLClosingLimit) {
             this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
-        } else if (ll > 2) {
+        } else if (ll > 0.5) {
             if (longP !== undefined && shortP !== undefined) {
                 this.narrowLongShortDiffPNL(assetInfo, longP, shortP)
             } else {
@@ -394,6 +394,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             }
         } else if (this.oPNLClosingLimit < 36) {
             this.addInvestmentAdvice(Action.REDUCELONG, 10, 'ENSUSDT', `we emergency sell some ENSUSDT`)
+            this.addInvestmentAdvice(Action.REDUCELONG, 0.01, 'ETHUSDT', `we emergency sell some ETHUSDT`)
         }
 
     }
