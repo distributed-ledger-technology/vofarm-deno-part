@@ -134,7 +134,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         let overallHedgeOptionFound = false
 
-        if (this.overallLSD > 10000) {
+        if (this.overallLSD > 2000) {
 
             for (const assetInfo of this.assetInfos) {
                 let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
