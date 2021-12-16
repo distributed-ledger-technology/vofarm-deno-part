@@ -8,7 +8,7 @@ import { VoFarmStrategy } from "./vofarm-strategy.ts";
 
 export abstract class LongShortClassics extends VoFarmStrategy {
 
-    protected oPNLClosingLimit: number = 100
+    protected pNLClosingLimit: number = 100
     protected overallLSD: number = 0
     protected advices: InvestmentAdvice[] = []
     protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
@@ -95,7 +95,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         this.overallLSD = longValue - shortValue
-        this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)} - opnlclosinglimit: ${this.oPNLClosingLimit}`, 1)
+        this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)} - pNLClosingLimit: ${this.pNLClosingLimit}`, 1)
 
         try {
             if (this.liquidityLevel > 1) {
@@ -108,9 +108,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
         if (this.liquidityLevel < 0.01) {
-            this.oPNLClosingLimit = this.oPNLClosingLimit - 1
+            this.pNLClosingLimit = this.pNLClosingLimit - 1
         } else {
-            this.oPNLClosingLimit = 100
+            this.pNLClosingLimit = 100
         }
 
 
@@ -220,9 +220,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected getClosingPointLong(lsd: number, ll: number): number {
         let cPL = 0
         if (lsd > 0) {
-            cPL = this.oPNLClosingLimit - lsd + ll
+            cPL = this.pNLClosingLimit - lsd + ll
         } else {
-            cPL = this.oPNLClosingLimit + Math.abs(lsd) + ll
+            cPL = this.pNLClosingLimit + Math.abs(lsd) + ll
         }
 
         if (cPL < 24) {
@@ -237,9 +237,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let cPS = 0
 
         if (lsd < 0) {
-            cPS = this.oPNLClosingLimit - Math.abs(lsd) + ll
+            cPS = this.pNLClosingLimit - Math.abs(lsd) + ll
         } else {
-            cPS = this.oPNLClosingLimit + lsd + ll
+            cPS = this.pNLClosingLimit + lsd + ll
         }
 
         if (cPS < 24) {
@@ -384,17 +384,16 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} (l: ${longP.data.unrealised_pnl.toFixed(2)} s: ${shortP.data.unrealised_pnl.toFixed(2)}) - lsd: ${lsd.toFixed(2)}`, 2)
 
-        if (overallPNL > this.oPNLClosingLimit) {
-            this.closeAll(assetInfo, `${ll} ${overallPNL}`, longP, shortP)
-        } else if (ll > 0.5) {
+        if (ll > 0.5) {
             if (longP !== undefined && shortP !== undefined) {
                 this.narrowLongShortDiffPNL(assetInfo, longP, shortP)
             } else {
                 this.logger.log(`funny: ${assetInfo.pair}`, 2)
             }
-        } else if (this.oPNLClosingLimit < 36) {
-            this.addInvestmentAdvice(Action.REDUCELONG, 10, 'ENSUSDT', `we emergency sell some ENSUSDT`)
-            this.addInvestmentAdvice(Action.REDUCELONG, 0.01, 'ETHUSDT', `we emergency sell some ETHUSDT`)
+        } else if (this.pNLClosingLimit < 12 && ll < 0.1) {
+            this.addInvestmentAdvice(Action.REDUCELONG, 10, 'ENSUSDT', `we emergency reduce long ENSUSDT`)
+            this.addInvestmentAdvice(Action.REDUCELONG, 0.01, 'ETHUSDT', `we emergency reduce long ETHUSDT`)
+            this.addInvestmentAdvice(Action.REDUCESHORT, 0.001, 'BTCUSDT', `we emergency reduce short BTCUSDT`)
         }
 
     }
