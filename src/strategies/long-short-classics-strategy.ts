@@ -220,7 +220,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected getClosingPointLong(lsd: number, ll: number): number {
         let cPL = 0
         if (lsd > 0) {
-            cPL = this.pNLClosingLimit - lsd + ll
+            cPL = 36
         } else {
             cPL = this.pNLClosingLimit + Math.abs(lsd) + ll
         }
@@ -237,7 +237,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let cPS = 0
 
         if (lsd < 0) {
-            cPS = this.pNLClosingLimit - Math.abs(lsd) + ll
+            cPS = 36
         } else {
             cPS = this.pNLClosingLimit + lsd + ll
         }
