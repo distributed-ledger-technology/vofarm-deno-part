@@ -134,7 +134,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         let overallHedgeOptionFound = false
 
-        if (this.overallLSD > 2000) {
+        if (this.overallLSD > 1000) {
 
             for (const assetInfo of this.assetInfos) {
                 let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
@@ -144,11 +144,11 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 }
             }
 
-            if (overallHedgeOptionFound === false && this.overallLSD > 5000) {
+            if (overallHedgeOptionFound === false && this.overallLSD > 3000) {
                 this.addInvestmentAdvice(Action.SELL, 0.01, 'BTCUSDT', `we emergency adjust the hedge by short selling BTCUSDT`)
             }
 
-        } else if (this.overallLSD < 1500) {
+        } else if (this.overallLSD < 0) {
 
             for (const assetInfo of this.assetInfos) {
                 let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
