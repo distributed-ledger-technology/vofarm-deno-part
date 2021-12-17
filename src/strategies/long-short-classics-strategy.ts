@@ -98,7 +98,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)} - pNLClosingLimit: ${this.pNLClosingLimit}`, 1)
 
         try {
-            if (this.liquidityLevel > 1) {
+            if (this.liquidityLevel > 0.4) {
                 this.hedgeItAll()
             }
         } catch (error) {
