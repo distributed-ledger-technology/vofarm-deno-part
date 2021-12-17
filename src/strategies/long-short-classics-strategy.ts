@@ -297,11 +297,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 this.logger.log(`${assetInfo.pair} aPL: ${aPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
                 if (pnlLong < aPL) {
-                    let factor = Math.floor(Math.abs(lsd) / 10)
-                    if (factor < 1) factor = 1
-                    const amount = Number((assetInfo.minTradingAmount * factor).toFixed(3))
-                    const reason = `we enhance our ${assetInfo.pair} long position (at a pnl of: ${pnlLong}%) by ${amount}`
-                    this.addInvestmentAdvice(Action.BUY, amount, assetInfo.pair, reason)
+                    const reason = `we enhance our ${assetInfo.pair} long position (at a pnl of: ${pnlLong}%) by ${assetInfo.minTradingAmount}`
+                    this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
                 }
 
                 break
@@ -318,11 +315,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
                 if (pnlShort < aPS) {
 
-                    let factor = Math.floor(Math.abs(lsd) / 10)
-                    if (factor < 1) factor = 1
-                    const amount = Number((assetInfo.minTradingAmount * factor).toFixed(3))
-                    const reason = `we enhance our ${assetInfo.pair} short position (at a pnl of: ${pnlShort}%) by ${amount}`
-                    this.addInvestmentAdvice(Action.SELL, amount, assetInfo.pair, reason)
+                    const reason = `we enhance our ${assetInfo.pair} short position (at a pnl of: ${pnlShort}%) by ${assetInfo.minTradingAmount}`
+                    this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
                 }
 
                 break
