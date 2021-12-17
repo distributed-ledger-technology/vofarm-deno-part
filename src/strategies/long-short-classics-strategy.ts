@@ -108,7 +108,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
         if (this.liquidityLevel < 0.01) {
-            this.pNLClosingLimit = this.pNLClosingLimit - 1
+            this.pNLClosingLimit = this.pNLClosingLimit - 10
         } else {
             this.pNLClosingLimit = 100
         }
