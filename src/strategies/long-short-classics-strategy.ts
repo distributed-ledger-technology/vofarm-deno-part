@@ -144,8 +144,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 }
             }
 
-            if (overallHedgeOptionFound === false && this.overallLSD > 3000) {
-                this.addInvestmentAdvice(Action.SELL, 0.01, 'BTCUSDT', `we emergency adjust the hedge by short selling BTCUSDT`)
+            if (overallHedgeOptionFound === false && this.overallLSD > 1500) {
+                this.addInvestmentAdvice(Action.SELL, 0.02, 'BTCUSDT', `we emergency adjust the hedge by short selling BTCUSDT`)
             }
 
         } else if (this.overallLSD < 0) {
