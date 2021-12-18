@@ -97,14 +97,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.overallLSD = longValue - shortValue
         this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)} - pNLClosingLimit: ${this.pNLClosingLimit}`, 1)
 
-        try {
-            if (this.liquidityLevel > 0.4) {
-                this.hedgeItAll()
-            }
-        } catch (error) {
-            this.logger.log(`strange situation while hedging it all`, 2)
-        }
-
         this.advices = this.advices.concat([...this.currentInvestmentAdvices])
 
         if (this.liquidityLevel < 0.01) {
@@ -126,43 +118,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
         return this.advices
-
-    }
-
-
-    protected hedgeItAll(): void {
-
-        let overallHedgeOptionFound = false
-
-        if (this.overallLSD > 1000) {
-
-            for (const assetInfo of this.assetInfos) {
-                let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
-                if (shortPosition.data.unrealised_pnl < 0) {
-                    this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by short selling ${assetInfo.pair}`)
-                    overallHedgeOptionFound = true
-                }
-            }
-
-            if (overallHedgeOptionFound === false && this.overallLSD > 1500) {
-                this.addInvestmentAdvice(Action.SELL, 0.02, 'BTCUSDT', `we emergency adjust the hedge by short selling BTCUSDT`)
-            }
-
-        } else if (this.overallLSD < 0) {
-
-            for (const assetInfo of this.assetInfos) {
-                let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
-                if (longPosition.data.unrealised_pnl < 0) {
-                    this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `we adjust the hedge by buying ${assetInfo.pair}`)
-                    overallHedgeOptionFound = true
-                }
-            }
-
-            if (overallHedgeOptionFound === false && this.overallLSD < -100) {
-                this.addInvestmentAdvice(Action.BUY, 0.1, 'ETHUSDT', `we emergency adjust the hedge by buying ETHUSDT`)
-                this.addInvestmentAdvice(Action.BUY, 0.1, 'ENSUSDT', `we emergency adjust the hedge by buying ENSUSDT`)
-            }
-        }
 
     }
 
@@ -191,12 +146,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getAddingPointLong(lsd: number, ll: number): number {
-        if (ll > 0.5) {
-            if (lsd < 0) {
-                return -1
-            } else {
-                return (lsd * -1.1) - 1
-            }
+        if (ll > 17 && lsd < 10) {
+            return 200000
         }
         return -200000
 
@@ -204,13 +155,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getAddingPointShort(lsd: number, ll: number): number {
-        if (ll > 0.5) {
-            if (lsd > 0) {
-                return -1
-            } else {
-                return (Math.abs(lsd) * -1.1) - 1
-            }
-
+        if (ll > 17 && lsd > 11) {
+            return 100 - lsd
         }
         return -200000
 
@@ -218,35 +164,28 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getClosingPointLong(lsd: number, ll: number): number {
-        let cPL = 0
-        if (lsd > 0) {
-            cPL = 36
-        } else {
-            cPL = this.pNLClosingLimit + Math.abs(lsd) + ll
+        if (ll < 0.1) {
+            return -200000
         }
 
-        if (cPL < 24) {
-            cPL = 200000
+        if (lsd > 20) {
+            return 100
         }
 
-        return cPL
+        return 200000
     }
 
 
     protected getClosingPointShort(lsd: number, ll: number): number {
-        let cPS = 0
-
-        if (lsd < 0) {
-            cPS = 36
-        } else {
-            cPS = this.pNLClosingLimit + lsd + ll
+        if (ll < 0.1) {
+            return -200000
         }
 
-        if (cPS < 24) {
-            cPS = 200000
+        if (lsd < 10) {
+            return 100
         }
 
-        return cPS
+        return 200000
     }
 
 
