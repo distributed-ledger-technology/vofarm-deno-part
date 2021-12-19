@@ -147,7 +147,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointLong(lsd: number, ll: number): number {
 
-        if (ll > 17 && lsd < 14) {
+        if (ll > 12 && lsd < 20) {
             return -1
         }
 
@@ -158,7 +158,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointShort(lsd: number, ll: number): number {
 
-        if (ll > 17 && lsd > 9) {
+        if (ll > 12 && lsd > 10) {
             return -50 - lsd
         }
         return -200000
@@ -184,7 +184,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (lsd < 10) {
+        if (lsd < 20) {
             return 100
         }
 
@@ -320,7 +320,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} (l: ${longP.data.unrealised_pnl.toFixed(2)} s: ${shortP.data.unrealised_pnl.toFixed(2)}) - lsd: ${lsd.toFixed(2)}`, 2)
 
-        if (ll > 17) {
+        if (ll > 12) {
             if (longP !== undefined && shortP !== undefined) {
                 this.narrowLongShortDiffPNL(assetInfo, longP, shortP)
             } else {
