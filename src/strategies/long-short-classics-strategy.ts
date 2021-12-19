@@ -147,8 +147,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointLong(lsd: number, ll: number): number {
 
-        if (ll > 12 && lsd < 20) {
-            return -1
+        if (ll > 12 && lsd < 24) {
+            return lsd * -2
         }
 
         return -200000
@@ -158,9 +158,10 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointShort(lsd: number, ll: number): number {
 
-        if (ll > 12 && lsd > 10) {
-            return -50 - lsd
+        if (ll > 12 && lsd > 5) {
+            return -50 + lsd
         }
+
         return -200000
 
     }
@@ -171,8 +172,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (lsd > 10) {
-            return 100
+        if (lsd > 5) {
+            return 100 - lsd
         }
 
         return 200000
