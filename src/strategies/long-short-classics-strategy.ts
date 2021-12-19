@@ -159,7 +159,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected getAddingPointShort(lsd: number, ll: number): number {
 
         if (ll > 12 && lsd > 5) {
-            return -50 + lsd
+            return -72 + lsd * 2
         }
 
         return -200000
