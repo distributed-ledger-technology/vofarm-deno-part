@@ -11,60 +11,57 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected pNLClosingLimit: number = 100
     protected overallLSD: number = 0
     protected advices: InvestmentAdvice[] = []
-    protected assetInfo: AssetInfo = { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 }
     protected assetInfos: AssetInfo[] = [
-        { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 },
-        { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3 },
-        { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2 },
-        { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "ADAUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "DOTUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0 },
-        { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2 },
-        { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0 },
-        { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2 },
-        { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "BITUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0 },
-        { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1 },
-        { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2 },
-        { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        // { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0 },
-        // { pair: "HNTUSDT", minTradingAmount: 1 },
-        // { pair: "MKRUSDT", minTradingAmount: 1 },
+        { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 20, minLSD: 5, maxLSD: 40 },
+        { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 20, minLSD: 5, maxLSD: 40 },
+        { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 10, minLSD: 2, maxLSD: 20 },
+        { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: 2, maxLSD: 20 },
+        { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ADAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "DOTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "BITUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
+        { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 5, minLSD: 0, maxLSD: 15 },
     ]
 
     public constructor(logger: VFLogger) {
@@ -145,9 +142,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
 
-    protected getAddingPointLong(lsd: number, ll: number): number {
+    protected getAddingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 12 && lsd < 36) {
+        if (lsd < assetInfo.minLSD) {
+            return 200000
+        }
+
+        if (ll > 12 && lsd < assetInfo.targetLSD) {
             return lsd * -2
         }
 
@@ -156,9 +157,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
 
-    protected getAddingPointShort(lsd: number, ll: number): number {
+    protected getAddingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 12 && lsd > 5) {
+        if (lsd > assetInfo.maxLSD) {
+            return 200000
+        }
+
+        if (ll > 12 && lsd > assetInfo.targetLSD) {
             return -72 + lsd * 2
         }
 
@@ -167,12 +172,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
 
-    protected getClosingPointLong(lsd: number, ll: number): number {
+    protected getClosingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
+
         if (ll < 0.1) {
             return -200000
         }
 
-        if (lsd > 5) {
+        if (lsd > assetInfo.minLSD) {
             return 100 - lsd
         }
 
@@ -180,12 +186,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
 
-    protected getClosingPointShort(lsd: number, ll: number): number {
+    protected getClosingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
         if (ll < 0.1) {
             return -200000
         }
 
-        if (lsd < 36) {
+        if (lsd < assetInfo.targetLSD) {
             return 100 + lsd
         }
 
@@ -235,7 +241,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
                 let pnlLong = FinancialCalculator.getPNLOfPositionInPercent(longP)
 
-                let aPL = this.getAddingPointLong(lsd, ll)
+                let aPL = this.getAddingPointLong(assetInfo, lsd, ll)
 
                 this.logger.log(`${assetInfo.pair} aPL: ${aPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
@@ -252,7 +258,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
                 let pnlShort = FinancialCalculator.getPNLOfPositionInPercent(shortP)
 
-                let aPS = this.getAddingPointShort(lsd, ll)
+                let aPS = this.getAddingPointShort(assetInfo, lsd, ll)
 
                 this.logger.log(`${assetInfo.pair} aPS: ${aPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
@@ -269,7 +275,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
                 let pnlLong = FinancialCalculator.getPNLOfPositionInPercent(longP)
 
-                let cPL = this.getClosingPointLong(lsd, ll)
+                let cPL = this.getClosingPointLong(assetInfo, lsd, ll)
 
                 this.logger.log(`${assetInfo.pair} cPL: ${cPL.toFixed(2)} (${pnlLong})`, LogLevel.INFO)
 
@@ -286,7 +292,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
                 let pnlShort = FinancialCalculator.getPNLOfPositionInPercent(shortP)
 
-                let cPS = this.getClosingPointShort(lsd, ll)
+                let cPS = this.getClosingPointShort(assetInfo, lsd, ll)
 
                 this.logger.log(`${assetInfo.pair} cPS: ${cPS.toFixed(2)} (${pnlShort})`, LogLevel.INFO)
 
