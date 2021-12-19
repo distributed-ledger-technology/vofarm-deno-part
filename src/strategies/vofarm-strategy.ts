@@ -2,12 +2,21 @@ import { IExchangeConnector } from "../../deps.ts";
 import { Action, AssetInfo, InvestmentAdvice, IVoFarmStrategy, LogLevel } from "../../mod.ts";
 import { VFLogger } from "../utilities/logger.ts";
 
+export interface IConsistencyCheckPositionEntry {
+    pair: string
+    side: string
+    size: number
+}
+
+
 export abstract class VoFarmStrategy implements IVoFarmStrategy {
 
     protected liquidityLevel = 0
     protected fundamentals: any = {}
     protected currentInvestmentAdvices: InvestmentAdvice[] = []
     protected lastAdviceDate: Date = new Date()
+    protected consistencyCheckPositionsOwnNode: IConsistencyCheckPositionEntry[] = []
+    protected consistencyCheckPositionsRemoteNode: IConsistencyCheckPositionEntry[] = []
 
     public abstract getInvestmentAdvices(investmentDecisionBase: any): Promise<InvestmentAdvice[]>
 
@@ -96,7 +105,17 @@ export abstract class VoFarmStrategy implements IVoFarmStrategy {
         const message = `*********** equity: ${this.fundamentals.accountInfo.result.USDT.equity.toFixed(2)} - ll: ${this.liquidityLevel.toFixed(2)}} ***********`
         this.logger.log(message, 1)
 
+        for (const remotePosition of this.fundamentals.positions) {
+            this.consistencyCheckPositionsRemoteNode.push({ pair: remotePosition.data.symbol, side: remotePosition.data.side, size: remotePosition.data.size })
+        }
+
+        if (this.consistencyCheckPositionsOwnNode.length === 0) {
+            this.logger.log(`consistencyCheckPositionsOwnNode is initial`, 2)
+            this.consistencyCheckPositionsOwnNode = [...this.consistencyCheckPositionsRemoteNode]
+        }
     }
 
-
+    protected compareConsistencyLedger() {
+        // tbd
+    }
 }

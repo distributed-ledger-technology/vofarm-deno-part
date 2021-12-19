@@ -5,12 +5,13 @@ import { VFLogger } from "../utilities/logger.ts";
 
 import { VoFarmStrategy } from "./vofarm-strategy.ts";
 
-
 export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected pNLClosingLimit: number = 100
     protected overallLSD: number = 0
     protected advices: InvestmentAdvice[] = []
+
+
     protected assetInfos: AssetInfo[] = [
         { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 20, minLSD: 5, maxLSD: 50 },
         { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 20, minLSD: 5, maxLSD: 50 },
@@ -148,7 +149,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return 200000
         }
 
-        if (ll > 12 && lsd < assetInfo.targetLSD) {
+        if (ll > 6 && lsd < assetInfo.maxLSD) {
             return lsd * -2
         }
 
@@ -163,7 +164,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return 200000
         }
 
-        if (ll > 12 && lsd > assetInfo.targetLSD) {
+        if (ll > 6 && lsd > assetInfo.minLSD) {
             return -72 + lsd * 2
         }
 
@@ -178,7 +179,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (lsd > assetInfo.minLSD) {
+        if (lsd > assetInfo.targetLSD) {
             return 100 - lsd
         }
 
@@ -191,7 +192,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (lsd < assetInfo.maxLSD) {
+        if (lsd < assetInfo.targetLSD) {
             return 100 + lsd
         }
 
