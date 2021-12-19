@@ -320,7 +320,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${overallPNL.toFixed(2)} (l: ${longP.data.unrealised_pnl.toFixed(2)} s: ${shortP.data.unrealised_pnl.toFixed(2)}) - lsd: ${lsd.toFixed(2)}`, 2)
 
-        if (ll > 0.5) {
+        if (ll > 17) {
             if (longP !== undefined && shortP !== undefined) {
                 this.narrowLongShortDiffPNL(assetInfo, longP, shortP)
             } else {
