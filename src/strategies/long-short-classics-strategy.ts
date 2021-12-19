@@ -191,7 +191,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (lsd < assetInfo.targetLSD) {
+        if (lsd < assetInfo.maxLSD) {
             return 100 + lsd
         }
 
