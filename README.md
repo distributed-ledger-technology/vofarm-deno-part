@@ -7,8 +7,9 @@ Open Source Developers are invited to propose further strategies via Pull Reques
 
 ## Usage Examples Regarding Centralized Volatility Farming
 ```sh
-deno run --allow-net src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> BybitConnector LongShortClassics 0 22
+deno run --allow-net https://deno.land/x/vofarm@v1.0.0/src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> BybitConnector LongShortClassics 0 22
 ```
+
 
 ## Usage Examples Regarding Decentralized Volatility Farming
 ... under construction on Arbitrum ... 
