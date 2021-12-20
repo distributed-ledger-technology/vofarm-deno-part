@@ -175,8 +175,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getClosingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll < 0.1) {
+        if (ll < 0.01) {
             return -200000
+        }
+
+        if (ll < 0.2) {
+            return 2
         }
 
         if (lsd > assetInfo.targetLSD) {
@@ -188,8 +192,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getClosingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
-        if (ll < 0.1) {
+        if (ll < 0.01) {
             return -200000
+        }
+
+        if (ll < 0.2) {
+            return 2
         }
 
         if (lsd < assetInfo.targetLSD) {
