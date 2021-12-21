@@ -54,11 +54,9 @@ export abstract class VoFarmStrategy implements IVoFarmStrategy {
     }
 
 
-    protected async narrowLongShortDiffPNL(assetInfo: AssetInfo, longP: any, shortP: any) {
-        if (longP.data.unrealised_pnl < 0 && shortP.data.unrealised_pnl < 0) {
-            this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
-            this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
-        }
+    protected async narrowLongShortDiffPNL(assetInfo: AssetInfo) {
+        this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
+        this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, `narrowing ${assetInfo.pair} `)
     }
 
 
@@ -117,5 +115,21 @@ export abstract class VoFarmStrategy implements IVoFarmStrategy {
 
     protected compareConsistencyLedger() {
         // tbd
+    }
+
+    protected getOverallLSD(): number {
+        let longValue = 0
+        let shortValue = 0
+
+        for (const position of this.fundamentals.positions) {
+            if (position.data.side === 'Buy') {
+                longValue = longValue + position.data.position_value
+            } else if (position.data.side === 'Sell') {
+                shortValue = shortValue + position.data.position_value
+            }
+        }
+
+        return longValue - shortValue
+
     }
 }

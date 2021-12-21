@@ -1,5 +1,5 @@
 export enum Action {
-    PAUSE = "PAUSE",
+    SPECIAL = "SPECIAL",
     BUY = "BUY",
     SELL = "SELL",
     REDUCELONG = "REDUCELONG",
