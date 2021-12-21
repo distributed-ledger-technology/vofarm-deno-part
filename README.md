@@ -14,14 +14,3 @@ deno run --allow-net https://deno.land/x/vofarm@v1.0.0/src/start-centralized-vof
 ## Usage Examples Regarding Decentralized Volatility Farming
 ... under construction on Arbitrum ... 
 
-## Unit Tests
-
-```sh  
-
-deno test https://deno.land/x/vofarm@v1.0.2/src/strategies/long-short-classics-strategy.ts
-
-deno test https://deno.land/x/vofarm@v1.0.2/src/strategies/vofarm-strategy.ts
-
-```
-
-For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)
