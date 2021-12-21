@@ -18,9 +18,9 @@ deno run --allow-net https://deno.land/x/vofarm@v1.0.0/src/start-centralized-vof
 
 ```sh  
 
-deno test https://deno.land/x/vofarm/src/strategies/long-short-base-eth-strategy.spec.ts  
+deno test https://deno.land/x/vofarm@v1.0.2/src/strategies/long-short-classics-strategy.ts
 
-deno test https://deno.land/x/vofarm/src/strategies/long-short-base-btc-strategy.spec.ts  
+deno test https://deno.land/x/vofarm@v1.0.2/src/strategies/vofarm-strategy.ts
 
 ```
 
