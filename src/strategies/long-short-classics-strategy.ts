@@ -124,12 +124,14 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 2 && lsd < assetInfo.minLSD) {
-            return 200000
-        }
+        if (ll > 2) {
+            if (lsd < assetInfo.minLSD) {
+                return 200000
+            }
 
-        if (ll > 0.5 && lsd < assetInfo.maxLSD) {
-            return lsd * -2
+            if (lsd < assetInfo.maxLSD) {
+                return lsd * -2
+            }
         }
 
         return -200000
@@ -139,12 +141,15 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 2 && lsd > assetInfo.maxLSD) {
-            return 200000
-        }
 
-        if (ll > 0.5 && lsd > assetInfo.minLSD) {
-            return -72 + lsd * 2
+        if (ll > 2) {
+            if (lsd > assetInfo.maxLSD) {
+                return 200000
+            }
+
+            if (lsd > assetInfo.minLSD) {
+                return -72 + lsd * 2
+            }
         }
 
         return -200000
@@ -211,51 +216,51 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 10, minLSD: 2, maxLSD: 30 },
             { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: 2, maxLSD: 30 },
             { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 10, minLSD: -10, maxLSD: 30 },
+            { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
             { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 20 },
             { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
             { pair: "ADAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
             { pair: "DOTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
-            { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "BITUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
-            { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 15 },
+            { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "BITUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
+            { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -20, maxLSD: 20 },
         ]
     }
 
