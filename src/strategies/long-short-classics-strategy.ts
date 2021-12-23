@@ -69,7 +69,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         if (longPosition === undefined || shortPosition === undefined) {
             this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
-        } else if (this.liquidityLevel > 2 && longPosition.data.unrealised_pnl < 0 && shortPosition.data.unrealised_pnl < 0) {
+        } else if (this.liquidityLevel > 7 && longPosition.data.unrealised_pnl < 0 && shortPosition.data.unrealised_pnl < 0) {
             this.narrowLongShortDiffPNL(assetInfo)
         }
 
