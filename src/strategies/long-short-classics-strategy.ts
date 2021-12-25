@@ -9,7 +9,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected overallLSD: number = 0
     protected overallPNL: number = 0
-
+    protected generalClosingTrigger: number = 200
     protected assetInfos: AssetInfo[]
 
     public constructor(logger: VFLogger) {
@@ -163,8 +163,11 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (ll < 0.3) {
-            return 24
+        if (ll < 2) {
+            this.generalClosingTrigger--
+            return this.generalClosingTrigger
+        } else {
+            this.generalClosingTrigger = 100
         }
 
         if (lsd > assetInfo.targetLSD) {
@@ -180,8 +183,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             return -200000
         }
 
-        if (ll < 0.3) {
-            return 24
+        if (ll < 2) {
+            return this.generalClosingTrigger
         }
 
         if (lsd < assetInfo.targetLSD) {
