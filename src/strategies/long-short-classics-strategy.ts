@@ -29,7 +29,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-        if (this.liquidityLevel < 2) {
+        if (this.liquidityLevel < 1) {
+            this.generalClosingTrigger = this.generalClosingTrigger - 10
+        } else if (this.liquidityLevel < 2) {
             this.generalClosingTrigger--
         } else {
             this.generalClosingTrigger = 100
@@ -163,10 +165,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getClosingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll < 0.01) {
-            return -200000
-        }
-
         if (ll < 2) {
             return this.generalClosingTrigger
         }
@@ -180,9 +178,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
 
     protected getClosingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
-        if (ll < 0.01) {
-            return -200000
-        }
 
         if (ll < 2) {
             return this.generalClosingTrigger
