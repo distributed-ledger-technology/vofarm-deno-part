@@ -9,7 +9,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected overallLSD: number = 0
     protected overallPNL: number = 0
-    protected generalClosingTrigger: number = 200
+    protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
 
     public constructor(logger: VFLogger) {
@@ -29,8 +29,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-        if (this.liquidityLevel < 0.1) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 30
+        if (this.liquidityLevel < 0.01) {
+            this.generalClosingTrigger = this.generalClosingTrigger - 50
         } else if (this.liquidityLevel < 0.2) {
             this.generalClosingTrigger = this.generalClosingTrigger - 1
         } else {
