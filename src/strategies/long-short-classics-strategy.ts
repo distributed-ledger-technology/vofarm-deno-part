@@ -31,7 +31,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
         if (this.liquidityLevel < 0.01) {
             this.generalClosingTrigger = this.generalClosingTrigger - 50
-        } else if (this.liquidityLevel < 0.2) {
+        } else if (this.liquidityLevel < 0.3) {
             this.generalClosingTrigger = this.generalClosingTrigger - 1
         } else {
             this.generalClosingTrigger = 100
