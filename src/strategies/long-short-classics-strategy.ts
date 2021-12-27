@@ -29,13 +29,18 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
-        if (this.liquidityLevel < 0.01) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 50
-        } else if (this.liquidityLevel < 0.3 && this.generalClosingTrigger > 24) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 1
-        } else {
-            this.generalClosingTrigger = 100
+
+        this.setGeneralClosingTrigger()
+
+        if (this.liquidityLevel > 0.2) {
+
+            if (this.overallLSD < -2000) {
+                this.addInvestmentAdvice(Action.BUY, 1, 'ENSUSDT', "buying ENS to hedge over shorted situation")
+            } else if (this.overallLSD > 4000) {
+                this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', "short selling DOGE to hedge overly bullish situation")
+            }
         }
+
         this.overallLSD = this.getOverallLSD()
 
         this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)}`, 1)
@@ -54,11 +59,26 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     }
 
+    protected setGeneralClosingTrigger(): void {
+        if (this.liquidityLevel < 0.01) {
+            this.generalClosingTrigger = this.generalClosingTrigger - 50
+        } else if (this.liquidityLevel < 0.3 && this.generalClosingTrigger > 24) {
+            this.generalClosingTrigger = this.generalClosingTrigger - 1
+        } else {
+            this.generalClosingTrigger = 100
+        }
+    }
 
     protected async playAsset(assetInfo: AssetInfo, exchangeConnector: IExchangeConnector): Promise<void> {
 
         let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
         let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
+
+        if (longPosition === undefined || shortPosition === undefined) {
+            this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
+            return
+        }
+
         let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
 
         if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
@@ -73,9 +93,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${this.overallPNL.toFixed(2)} (l: ${longPosition.data.unrealised_pnl.toFixed(2)} s: ${shortPosition.data.unrealised_pnl.toFixed(2)}) - lsd: ${longShortDeltaInPercent.toFixed(2)}`, 2)
 
-        if (longPosition === undefined || shortPosition === undefined) {
-            this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
-        } else if (this.liquidityLevel > 0.5 && longPosition.data.unrealised_pnl < 0 && shortPosition.data.unrealised_pnl < 0) {
+        if (this.liquidityLevel > 0.5 && longPosition.data.unrealised_pnl < 0 && shortPosition.data.unrealised_pnl < 0) {
             this.narrowLongShortDiffPNL(assetInfo)
         }
 
