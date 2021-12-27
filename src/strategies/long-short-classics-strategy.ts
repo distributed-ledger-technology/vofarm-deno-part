@@ -36,9 +36,10 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
             if (this.overallLSD < -200) {
                 this.addInvestmentAdvice(Action.BUY, 1, 'ENSUSDT', "buying ENS to hedge over shorted situation")
+                this.addInvestmentAdvice(Action.BUY, 1, 'LINKUSDT', "buying LINK to hedge over shorted situation")
                 this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', "buying ETH to hedge over shorted situation")
                 return this.currentInvestmentAdvices
-            } else if (this.overallLSD > 1000) {
+            } else if (this.overallLSD > 4000) {
                 this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', "short selling DOGE to hedge overly bullish situation")
                 this.addInvestmentAdvice(Action.SELL, 1, 'XRPUSDT', "short selling XRP to hedge overly bullish situation")
                 this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', "short selling BTC to hedge overly bullish situation")
