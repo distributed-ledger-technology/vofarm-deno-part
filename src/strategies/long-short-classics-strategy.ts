@@ -36,11 +36,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
             if (this.overallLSD < -2000) {
                 this.addInvestmentAdvice(Action.BUY, 1, 'ENSUSDT', "buying ENS to hedge over shorted situation")
+                return this.currentInvestmentAdvices
             } else if (this.overallLSD > 4000) {
                 this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', "short selling DOGE to hedge overly bullish situation")
+                return this.currentInvestmentAdvices
             }
 
-            return this.currentInvestmentAdvices
         }
 
         this.overallLSD = this.getOverallLSD()
