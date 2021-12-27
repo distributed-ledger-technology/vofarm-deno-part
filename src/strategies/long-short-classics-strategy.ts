@@ -64,7 +64,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected setGeneralClosingTrigger(): void {
         if (this.liquidityLevel < 0.01) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 50
+            this.generalClosingTrigger = this.generalClosingTrigger - 10
         } else if (this.liquidityLevel < 0.3 && this.generalClosingTrigger > 24) {
             this.generalClosingTrigger = this.generalClosingTrigger - 1
         } else {
