@@ -32,7 +32,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.setGeneralClosingTrigger()
 
-        if (this.liquidityLevel > 0.2) {
+        if (this.liquidityLevel > 0.05) {
 
             if (this.overallLSD < -2000) {
                 this.addInvestmentAdvice(Action.BUY, 1, 'ENSUSDT', "buying ENS to hedge over shorted situation")
