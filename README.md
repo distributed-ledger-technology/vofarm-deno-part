@@ -3,7 +3,8 @@ A peer 2 peer approach to increase price stability and to reduce price manipulat
 
 This module leverages [web3](https://deno.land/x/web3) and the [exchange connectors](https://deno.land/x/exchange_connectors).  
 
-Open Source Developers are invited to propose further strategies via Pull Requests.   
+Open Source Developers are invited to propose strategies via Pull Requests. Most of the strategies in this repository are continuously updated by automated commits based on reinforcement learning and sentiment analysis. In this this respect this repository is an ongoing experiment serving as learning playground.
+
 
 ## Usage Examples Regarding Centralized Volatility Farming
 ```sh
