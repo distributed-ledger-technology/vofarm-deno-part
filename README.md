@@ -7,7 +7,7 @@ Open Source Developers are invited to propose further strategies via Pull Reques
 
 ## Usage Examples Regarding Centralized Volatility Farming
 ```sh
-deno run --allow-net https://deno.land/x/vofarm@v1.0.0/src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> BybitConnector LongShortClassics VFLogger 0 22
+deno run --allow-net https://deno.land/x/vofarm@v1.0.3/src/start-centralized-vofarming.ts <yourbybitapikey> <yourbybitapisecret> BybitConnector LongShortClassics VFLogger 0 22
 ```
 
 
@@ -23,5 +23,9 @@ deno test https://deno.land/x/vofarm/src/strategies/long-short-base-eth-strategy
 deno test https://deno.land/x/vofarm/src/strategies/long-short-base-btc-strategy.spec.ts  
 
 ```
+
+# Closing open positions on ByBit
+Click in ByBit on Devivatives, then on Inverse Perpetual. Then on the bottom all open positions can be closed by clicking on Market
+
 
 For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)
