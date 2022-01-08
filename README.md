@@ -24,8 +24,8 @@ deno test https://deno.land/x/vofarm/src/strategies/long-short-base-btc-strategy
 
 ```
 
-# Closing open positions on ByBit
-Click in ByBit on Devivatives, then on Inverse Perpetual. Then on the bottom all open positions can be closed by clicking on Market
+## Closing open positions on ByBit
+Click in ByBit on Derivatives, then on Inverse Perpetual. Then on the bottom all open positions can be closed by clicking on Market
 
 
 For further examples you might want to check some - e.g. [unit tests](https://github.com/distributed-ledger-technology/vofarm-centralized-variant-as-template/blob/main/src/long-short-exploit-strategy.spec.ts)
