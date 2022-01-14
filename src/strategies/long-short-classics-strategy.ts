@@ -215,7 +215,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 15, minLSD: 0, maxLSD: 30 },
             { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 15, minLSD: 0, maxLSD: 30 },
             { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 15, minLSD: 0, maxLSD: 30 },
-            { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 10, minLSD: -2, maxLSD: 20 },
+            { pair: "AAVEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 15, minLSD: 0, maxLSD: 30 },
             { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: -2, maxLSD: 20 },
             { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5 },
             { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5 },
