@@ -32,22 +32,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.setGeneralClosingTrigger()
 
-        if (this.liquidityLevel > 0.05) {
-
-            if (this.overallLSD < -200) {
-                this.addInvestmentAdvice(Action.BUY, 1, 'ENSUSDT', "buying ENS to hedge over shorted situation")
-                this.addInvestmentAdvice(Action.BUY, 1, 'LINKUSDT', "buying LINK to hedge over shorted situation")
-                this.addInvestmentAdvice(Action.BUY, 0.01, 'ETHUSDT', "buying ETH to hedge over shorted situation")
-                return this.currentInvestmentAdvices
-            } else if (this.overallLSD > 4000) {
-                this.addInvestmentAdvice(Action.SELL, 1, 'DOGEUSDT', "short selling DOGE to hedge overly bullish situation")
-                this.addInvestmentAdvice(Action.SELL, 1, 'XRPUSDT', "short selling XRP to hedge overly bullish situation")
-                this.addInvestmentAdvice(Action.SELL, 0.001, 'BTCUSDT', "short selling BTC to hedge overly bullish situation")
-                return this.currentInvestmentAdvices
-            }
-
-        }
-
         this.overallLSD = this.getOverallLSD()
 
         this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)}`, 1)
@@ -100,7 +84,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.logger.log(`${assetInfo.pair} oPNL: ${this.overallPNL.toFixed(2)} (l: ${longPosition.data.unrealised_pnl.toFixed(2)} s: ${shortPosition.data.unrealised_pnl.toFixed(2)}) - lsd: ${longShortDeltaInPercent.toFixed(2)}`, 2)
 
-        if (this.liquidityLevel > 0.5 && longPosition.data.unrealised_pnl < 0 && shortPosition.data.unrealised_pnl < 0) {
+        if (this.liquidityLevel > 10 && longPosition.data.unrealised_pnl < -0.2 && shortPosition.data.unrealised_pnl < -0.2) {
             this.narrowLongShortDiffPNL(assetInfo)
         }
 
@@ -155,10 +139,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 2.5) {
-            if (lsd < assetInfo.minLSD) {
-                return 200000
-            }
+        if (ll > 10 && lsd < assetInfo.maxLSD) {
 
             if (lsd < assetInfo.maxLSD) {
                 return lsd * -2
@@ -173,14 +154,9 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected getAddingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
 
-        if (ll > 2.5) {
-            if (lsd > assetInfo.maxLSD) {
-                return 200000
-            }
+        if (ll > 10 && lsd > assetInfo.minLSD) {
 
-            if (lsd > assetInfo.minLSD) {
-                return -72 + lsd * 2
-            }
+            return -64 + lsd * 2
         }
 
         return -200000
@@ -190,29 +166,21 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getClosingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll < 2) {
-            return this.generalClosingTrigger
-        }
+        if (lsd < assetInfo.minLSD) return 1000000 // we're not selling :)
+        if (lsd > assetInfo.targetLSD) return this.generalClosingTrigger - lsd // selling proactively
 
-        if (lsd > assetInfo.targetLSD) {
-            return 200 - lsd
-        }
+        return this.generalClosingTrigger // selling at regular profit
 
-        return 200000
     }
 
 
     protected getClosingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll < 2) {
-            return this.generalClosingTrigger
-        }
+        if (lsd > assetInfo.maxLSD) return 1000000 // we're not reducing the short position
+        if (lsd < assetInfo.targetLSD) return this.generalClosingTrigger + lsd // reducing short position proactively
 
-        if (lsd < assetInfo.targetLSD) {
-            return 200 + lsd
-        }
+        return this.generalClosingTrigger // reducing short position at regular profit
 
-        return 200000
     }
 
 

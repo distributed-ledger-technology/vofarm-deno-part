@@ -95,6 +95,7 @@ export abstract class VoFarmStrategy implements IVoFarmStrategy {
 
         this.fundamentals.accountInfo = await exchangeConnector.getFuturesAccountData()
 
+        // console.log(this.fundamentals.accountInfo)
         if (!(this.fundamentals.accountInfo.result.USDT.equity > 0)) throw new Error(`r u kidding me?`) // also in case the exchange api delivers shit
 
         this.fundamentals.positions = await exchangeConnector.getPositions()
