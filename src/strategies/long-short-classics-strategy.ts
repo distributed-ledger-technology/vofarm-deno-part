@@ -139,10 +139,14 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
+        if (ll > 5 && lsd < 0) {
+            return -1
+        }
+
         if (ll > 10 && lsd < assetInfo.maxLSD) {
 
             if (lsd < assetInfo.maxLSD) {
-                return lsd * -2
+                return -20
             }
         }
 
@@ -153,10 +157,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
+        if (ll > 5 && lsd > 0) {
+            return -1
+        }
 
         if (ll > 10 && lsd > assetInfo.minLSD) {
 
-            return -64 + lsd * 2
+            return -20
         }
 
         return -200000
@@ -203,8 +210,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAssetsToPlayWith(): AssetInfo[] {
         return [
-            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 50, minLSD: 30, maxLSD: 70 },
-            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 50, minLSD: 30, maxLSD: 70 },
+            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 40, minLSD: 10, maxLSD: 70 },
+            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 40, minLSD: 10, maxLSD: 70 },
             { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 15, minLSD: 0, maxLSD: 30 },
             { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 15, minLSD: 0, maxLSD: 30 },
             { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 15, minLSD: 0, maxLSD: 30 },
