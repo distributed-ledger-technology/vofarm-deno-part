@@ -141,13 +141,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         if (ll > 5 && lsd < 0) {
             return -1
-        }
-
-        if (ll > 10 && lsd < assetInfo.maxLSD) {
-
-            if (lsd < assetInfo.maxLSD) {
-                return -20
-            }
+        } else if (ll > 7 && lsd < assetInfo.maxLSD) {
+            return -20
         }
 
         return -200000
@@ -159,10 +154,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         if (ll > 5 && lsd > 0) {
             return -1
-        }
-
-        if (ll > 10 && lsd > assetInfo.minLSD) {
-
+        } else if (ll > 7 && lsd > assetInfo.minLSD) {
             return -20
         }
 
