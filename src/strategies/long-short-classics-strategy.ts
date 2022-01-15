@@ -68,6 +68,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         assetInfo.longPercentageHistory.unshift(longPosition.data.unrealised_pnl)
         assetInfo.shortPercentageHistory.unshift(shortPosition.data.unrealised_pnl)
 
+        if (assetInfo.longPercentageHistory.length > 1000) {
+            console.log("splicing")
+            assetInfo.longPercentageHistory.splice(assetInfo.longPercentageHistory.length - 1, 1)
+            assetInfo.shortPercentageHistory.splice(assetInfo.shortPercentageHistory.length - 1, 1)
+        }
+
         if (longPosition === undefined || shortPosition === undefined) {
             this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
             return
@@ -158,13 +164,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         if (longLowestSinceX >= 6) {
 
-            const reason = `we enhance our ${assetInfo.pair} long position (lowestSinceX: ${longLowestSinceX}) by ${assetInfo.minTradingAmount}`
+            const reason = `we enhance our ${assetInfo.pair} long position (lowestSinceX: ${longLowestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
         if (shortLowestSinceX >= 6) {
 
-            const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX}) by ${assetInfo.minTradingAmount}`
+            const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX} (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
