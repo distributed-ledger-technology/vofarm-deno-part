@@ -144,6 +144,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         console.log(this.currentInvestmentAdvices.length)
+        console.log(JSON.stringify(this.currentInvestmentAdvices))
         if (this.currentInvestmentAdvices.length === 0) {
             this.lookForExtremes(assetInfo, longPosition, shortPosition)
         }
