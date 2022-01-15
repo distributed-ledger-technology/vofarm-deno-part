@@ -5,4 +5,6 @@ export interface AssetInfo {
     targetLSD: number
     minLSD: number
     maxLSD: number
+    longPercentageHistory: number[]
+    shortPercentageHistory: number[]
 }
