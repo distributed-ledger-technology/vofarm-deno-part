@@ -162,13 +162,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         console.log(`longHighestSinceX: ${longHighestSinceX}`)
         console.log(`shortHighestSinceX: ${shortHighestSinceX}`)
 
-        if (longLowestSinceX >= 6) {
+        if (longLowestSinceX >= 11) {
 
             const reason = `we enhance our ${assetInfo.pair} long position (lowestSinceX: ${longLowestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (shortLowestSinceX >= 6) {
+        if (shortLowestSinceX >= 11) {
 
             const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX} (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
