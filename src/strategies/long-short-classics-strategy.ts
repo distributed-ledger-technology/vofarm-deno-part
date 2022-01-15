@@ -180,7 +180,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let counter = 0
 
         for (const entry of history) {
-            if (currentPercentage <= entry) {
+            if (currentPercentage < entry) {
                 counter++
             } else {
                 return counter
@@ -194,7 +194,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let counter = 0
 
         for (const entry of history) {
-            if (currentPercentage >= entry) {
+            if (currentPercentage > entry) {
                 counter++
             } else {
                 return counter
