@@ -168,7 +168,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (shortLowestSinceX >= 20 && this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0)) {
+        if (shortLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0))) {
 
             const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX} (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
