@@ -232,7 +232,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAddingPointShort(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 5 && lsd > assetInfo.targetLSD) {
+        if (ll > 2 && lsd > assetInfo.targetLSD) {
             return -1
         } else if (ll > 7 && lsd > assetInfo.minLSD) {
             return -20
