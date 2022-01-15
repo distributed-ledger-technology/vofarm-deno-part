@@ -143,6 +143,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
+        console.log(this.currentInvestmentAdvices.length)
         if (this.currentInvestmentAdvices.length === 0) {
             this.lookForExtremes(assetInfo, longPosition, shortPosition)
         }
@@ -176,13 +177,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     }
 
-    protected getLowestSinceX(history: number[], currentPercentage: number) {
+    protected getLowestSinceX(history: number[], current: number) {
         let counter = 0
-
         for (const entry of history) {
-            if (currentPercentage < entry) {
+            if (current < entry) {
                 counter++
-            } else {
+            } else if (current > entry) {
                 return counter
             }
         }
@@ -190,13 +190,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         return counter
     }
 
-    protected getHighestSinceX(history: number[], currentPercentage: number) {
+    protected getHighestSinceX(history: number[], current: number) {
         let counter = 0
 
         for (const entry of history) {
-            if (currentPercentage > entry) {
+            if (current > entry) {
                 counter++
-            } else {
+            } else if (current < entry) {
                 return counter
             }
         }
