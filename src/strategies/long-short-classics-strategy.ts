@@ -143,8 +143,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        console.log(this.currentInvestmentAdvices.length)
-        console.log(JSON.stringify(this.currentInvestmentAdvices))
         if (this.currentInvestmentAdvices.length === 0) {
             this.lookForExtremes(assetInfo, longPosition, shortPosition)
         }
@@ -221,7 +219,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
     protected getAddingPointLong(assetInfo: AssetInfo, lsd: number, ll: number): number {
 
-        if (ll > 5 && lsd < 0) {
+        if (ll > 2 && lsd < 0) {
             return -1
         } else if (ll > 7 && lsd < assetInfo.maxLSD) {
             return -20
