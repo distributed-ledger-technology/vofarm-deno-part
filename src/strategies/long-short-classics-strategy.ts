@@ -282,8 +282,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAssetsToPlayWith(): AssetInfo[] {
         return [
-            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 25, minLSD: 0, maxLSD: 50, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 25, minLSD: 0, maxLSD: 50, longPercentageHistory: [], shortPercentageHistory: [], },
+            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 20, minLSD: 0, maxLSD: 40, longPercentageHistory: [], shortPercentageHistory: [], },
+            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 20, minLSD: 0, maxLSD: 40, longPercentageHistory: [], shortPercentageHistory: [], },
             { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 10, minLSD: 0, maxLSD: 30, longPercentageHistory: [], shortPercentageHistory: [], },
             { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: 0, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
             { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 10, minLSD: 0, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
