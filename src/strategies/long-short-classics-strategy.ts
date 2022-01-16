@@ -101,6 +101,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         if (longPosition === undefined || shortPosition === undefined) {
+            console.log(`alarm: ${assetInfo.pair} war nicht da`)
             this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
             return
         }
