@@ -91,6 +91,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
         let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
 
+        if (longPosition === undefined || shortPosition === undefined) {
+            console.log(`alarm: ${assetInfo.pair} war nicht da`)
+            this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
+            return
+        }
+
         assetInfo.longHistory.unshift(longPosition.data.unrealised_pnl)
         assetInfo.shortHistory.unshift(shortPosition.data.unrealised_pnl)
 
@@ -98,12 +104,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             console.log("splicing")
             assetInfo.longHistory.splice(assetInfo.longHistory.length - 1, 1)
             assetInfo.shortHistory.splice(assetInfo.shortHistory.length - 1, 1)
-        }
-
-        if (longPosition === undefined || shortPosition === undefined) {
-            console.log(`alarm: ${assetInfo.pair} war nicht da`)
-            this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
-            return
         }
 
         if (this.mostSuccessfulAvailableAsset.symbol === "") {
