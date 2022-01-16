@@ -20,10 +20,17 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
     protected historyLength = 1000
+    protected mostSuccessfulAvailableAsset: MostSuccessfulAsset
 
     public constructor(logger: VFLogger) {
         super(logger)
         this.assetInfos = this.getAssetsToPlayWith()
+        this.mostSuccessfulAvailableAsset = {
+            symbol: "",
+            side: "",
+            percentage: 0,
+            minTradingAmount: 0,
+        }
     }
 
     public async getInvestmentAdvices(input: any): Promise<InvestmentAdvice[]> {
@@ -40,6 +47,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
         this.setGeneralClosingTrigger()
+        this.setMostSuccessfulAvailableAsset()
 
         this.overallLSD = this.getOverallLSD()
 
@@ -156,32 +164,29 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        this.lookForExtremes(assetInfo, longPosition, shortPosition)
+
+
+        if (this.mostSuccessfulAvailableAsset.symbol !== assetInfo.pair) {
+            this.lookForExtremes(assetInfo, longPosition, shortPosition)
+        }
 
     }
 
     protected sellMostSuccessfulAvailableAsset() {
-        const mostSuccessfulAvailableAsset = this.getMostSuccessfulAvailableAsset()
-        if (mostSuccessfulAvailableAsset.side === 'Buy') {
-            const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} long position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
-            this.addInvestmentAdvice(Action.REDUCELONG, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
+        if (this.mostSuccessfulAvailableAsset.side === 'Buy') {
+            const reason = `we reduce our ${this.mostSuccessfulAvailableAsset.symbol} long position (percentage: ${this.mostSuccessfulAvailableAsset.percentage} by ${this.mostSuccessfulAvailableAsset.minTradingAmount}`
+            this.addInvestmentAdvice(Action.REDUCELONG, this.mostSuccessfulAvailableAsset.minTradingAmount, this.mostSuccessfulAvailableAsset.symbol, reason)
 
         }
 
-        if (mostSuccessfulAvailableAsset.side === 'Sell') {
-            const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} short position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
-            this.addInvestmentAdvice(Action.REDUCESHORT, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
+        if (this.mostSuccessfulAvailableAsset.side === 'Sell') {
+            const reason = `we reduce our ${this.mostSuccessfulAvailableAsset.symbol} short position (percentage: ${this.mostSuccessfulAvailableAsset.percentage} by ${this.mostSuccessfulAvailableAsset.minTradingAmount}`
+            this.addInvestmentAdvice(Action.REDUCESHORT, this.mostSuccessfulAvailableAsset.minTradingAmount, this.mostSuccessfulAvailableAsset.symbol, reason)
         }
 
     }
 
-    protected getMostSuccessfulAvailableAsset(): MostSuccessfulAsset {
-        const mostSuccessfulAsset: MostSuccessfulAsset = {
-            symbol: "",
-            side: "",
-            percentage: 0,
-            minTradingAmount: 0,
-        }
+    protected setMostSuccessfulAvailableAsset(): void {
 
         for (const position of this.fundamentals.positions) {
 
@@ -192,17 +197,16 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
             if (position.data.size > minTradingAmount) {
                 const pNLInPercent = FinancialCalculator.getPNLOfPositionInPercent(position)
-                if (pNLInPercent > mostSuccessfulAsset.percentage) {
-                    mostSuccessfulAsset.percentage = pNLInPercent
-                    mostSuccessfulAsset.symbol = position.data.symbol
-                    mostSuccessfulAsset.minTradingAmount = minTradingAmount
-                    mostSuccessfulAsset.side = position.data.side
+                if (pNLInPercent > this.mostSuccessfulAvailableAsset.percentage) {
+                    this.mostSuccessfulAvailableAsset.percentage = pNLInPercent
+                    this.mostSuccessfulAvailableAsset.symbol = position.data.symbol
+                    this.mostSuccessfulAvailableAsset.minTradingAmount = minTradingAmount
+                    this.mostSuccessfulAvailableAsset.side = position.data.side
                 }
 
             }
         }
 
-        return mostSuccessfulAsset
 
     }
 
@@ -219,15 +223,14 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         console.log(`longHighestSinceX: ${longHighestSinceX}`)
         console.log(`shortHighestSinceX: ${shortHighestSinceX}`)
 
-        let mostSuccessfulAsset = this.getMostSuccessfulAvailableAsset()
 
-        if (mostSuccessfulAsset.symbol !== assetInfo.pair && longLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD < 0))) {
+        if (longLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD < 0))) {
 
             const reason = `we enhance our ${assetInfo.pair} long position (lowestSinceX: ${longLowestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (mostSuccessfulAsset.symbol !== assetInfo.pair && shortLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0))) {
+        if (shortLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0))) {
 
             const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX} (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
