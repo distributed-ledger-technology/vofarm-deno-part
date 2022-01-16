@@ -246,20 +246,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (longHighestSinceX >= this.historyLength - 1) {
-
-            const reason = `we reduce our ${assetInfo.pair} long position (longHighestSinceX: ${longHighestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
-            this.addInvestmentAdvice(Action.REDUCELONG, assetInfo.minTradingAmount, assetInfo.pair, reason)
-
-        }
-
-        if (shortHighestSinceX >= this.historyLength - 1) {
-
-            const reason = `we reduce our ${assetInfo.pair} short position (shortHighestSinceX: ${shortHighestSinceX} - (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
-            this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
-
-        }
-
     }
 
     protected getLowestSinceX(history: number[], current: number) {
@@ -401,7 +387,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "CHZUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
-            { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "DOGEUSDT", minTradingAmount: 2, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
 
