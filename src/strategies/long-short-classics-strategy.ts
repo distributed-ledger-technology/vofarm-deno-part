@@ -66,7 +66,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected setGeneralClosingTrigger(): void {
         if (this.liquidityLevel < 0.01) {
             this.generalClosingTrigger = this.generalClosingTrigger - 10
-        } else if (this.liquidityLevel < 0.3 && this.generalClosingTrigger > 24) {
+        } else if (this.liquidityLevel < 0.1 && this.generalClosingTrigger > 24) {
             this.generalClosingTrigger = this.generalClosingTrigger - 1
         } else {
             this.generalClosingTrigger = 100
@@ -156,9 +156,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (this.currentInvestmentAdvices.length === 0) {
-            this.lookForExtremes(assetInfo, longPosition, shortPosition)
-        }
+        this.lookForExtremes(assetInfo, longPosition, shortPosition)
 
     }
 
