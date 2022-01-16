@@ -219,13 +219,15 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         console.log(`longHighestSinceX: ${longHighestSinceX}`)
         console.log(`shortHighestSinceX: ${shortHighestSinceX}`)
 
-        if (longLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD < 0))) {
+        let mostSuccessfulAsset = this.getMostSuccessfulAvailableAsset()
+
+        if (mostSuccessfulAsset.symbol !== assetInfo.pair && longLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD < 0))) {
 
             const reason = `we enhance our ${assetInfo.pair} long position (lowestSinceX: ${longLowestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.BUY, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (shortLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0))) {
+        if (mostSuccessfulAsset.symbol !== assetInfo.pair && shortLowestSinceX >= 20 && (this.liquidityLevel > 7 || (this.liquidityLevel > 1 && this.overallLSD > 0))) {
 
             const reason = `we enhance our ${assetInfo.pair} short position (shortLowestSinceX: ${shortLowestSinceX} (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
