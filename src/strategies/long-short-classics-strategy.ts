@@ -53,7 +53,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
         this.setGeneralClosingTrigger()
-        this.setMostSuccessfulAvailableAsset()
 
         this.overallLSD = this.getOverallLSD()
 
@@ -104,6 +103,10 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         if (longPosition === undefined || shortPosition === undefined) {
             this.ensureLongShortSetup(assetInfo, longPosition, shortPosition)
             return
+        }
+
+        if (this.mostSuccessfulAvailableAsset.symbol === "") {
+            this.setMostSuccessfulAvailableAsset()
         }
 
         let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
