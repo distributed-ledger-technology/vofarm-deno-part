@@ -5,12 +5,21 @@ import { VFLogger } from "../utilities/logger.ts";
 
 import { VoFarmStrategy } from "./vofarm-strategy.ts";
 
+export interface MostSuccessfulAsset {
+    symbol: string,
+    side: string
+    percentage: number,
+    minTradingAmount: number
+}
+
 export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected overallLSD: number = 0
     protected overallPNL: number = 0
+    protected triggerForUltimateProfitTaking: number = 2 // 0.1
     protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
+    protected historyLength = 1000
 
     public constructor(logger: VFLogger) {
         super(logger)
@@ -46,6 +55,10 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         }
 
+        if (this.liquidityLevel < this.triggerForUltimateProfitTaking) {
+            this.sellMostSuccessfulAvailableAsset()
+        }
+
         return this.currentInvestmentAdvices
 
     }
@@ -65,13 +78,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         let longPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Buy' && p.data.symbol === assetInfo.pair)[0]
         let shortPosition = this.fundamentals.positions.filter((p: any) => p.data.side === 'Sell' && p.data.symbol === assetInfo.pair)[0]
 
-        assetInfo.longPercentageHistory.unshift(longPosition.data.unrealised_pnl)
-        assetInfo.shortPercentageHistory.unshift(shortPosition.data.unrealised_pnl)
+        assetInfo.longHistory.unshift(longPosition.data.unrealised_pnl)
+        assetInfo.shortHistory.unshift(shortPosition.data.unrealised_pnl)
 
-        if (assetInfo.longPercentageHistory.length > 1000) {
+        if (assetInfo.longHistory.length > this.historyLength) {
             console.log("splicing")
-            assetInfo.longPercentageHistory.splice(assetInfo.longPercentageHistory.length - 1, 1)
-            assetInfo.shortPercentageHistory.splice(assetInfo.shortPercentageHistory.length - 1, 1)
+            assetInfo.longHistory.splice(assetInfo.longHistory.length - 1, 1)
+            assetInfo.shortHistory.splice(assetInfo.shortHistory.length - 1, 1)
         }
 
         if (longPosition === undefined || shortPosition === undefined) {
@@ -149,13 +162,64 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     }
 
+    protected sellMostSuccessfulAvailableAsset() {
+        console.log(`irgendwas`)
+        const mostSuccessfulAvailableAsset = this.getMostSuccessfulAvailableAsset()
+        console.log(JSON.stringify(mostSuccessfulAvailableAsset))
+        if (mostSuccessfulAvailableAsset.side === 'Buy') {
+            const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} long position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
+            this.addInvestmentAdvice(Action.REDUCELONG, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
+
+        }
+
+        if (mostSuccessfulAvailableAsset.side === 'Sell') {
+            const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} short position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
+            this.addInvestmentAdvice(Action.REDUCESHORT, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
+
+        }
+
+    }
+
+    protected getMostSuccessfulAvailableAsset(): MostSuccessfulAsset {
+        const mostSuccessfulAsset: MostSuccessfulAsset = {
+            symbol: "",
+            side: "",
+            percentage: 0,
+            minTradingAmount: 0,
+        }
+
+        for (const position of this.fundamentals.positions) {
+
+            console.log(`${position.data.size} ${position.data.side}`)
+
+            const assetInfoForPosition = this.assetInfos.filter((e: AssetInfo) => e.pair === position.data.symbol)[0]
+            if (assetInfoForPosition === undefined) continue
+
+            const minTradingAmount = assetInfoForPosition.minTradingAmount
+
+            if (position.data.size > minTradingAmount) {
+                const pNLInPercent = FinancialCalculator.getPNLOfPositionInPercent(position)
+                if (pNLInPercent > mostSuccessfulAsset.percentage) {
+                    mostSuccessfulAsset.percentage = pNLInPercent
+                    mostSuccessfulAsset.symbol = position.data.symbol
+                    mostSuccessfulAsset.minTradingAmount = minTradingAmount
+                    mostSuccessfulAsset.side = position.data.side
+                }
+
+            }
+        }
+
+        return mostSuccessfulAsset
+
+    }
+
     protected lookForExtremes(assetInfo: AssetInfo, longPosition: any, shortPosition: any) {
 
-        let longLowestSinceX = this.getLowestSinceX(assetInfo.longPercentageHistory, longPosition.data.unrealised_pnl)
-        let shortLowestSinceX = this.getLowestSinceX(assetInfo.shortPercentageHistory, shortPosition.data.unrealised_pnl)
+        let longLowestSinceX = this.getLowestSinceX(assetInfo.longHistory, longPosition.data.unrealised_pnl)
+        let shortLowestSinceX = this.getLowestSinceX(assetInfo.shortHistory, shortPosition.data.unrealised_pnl)
 
-        let longHighestSinceX = this.getHighestSinceX(assetInfo.longPercentageHistory, longPosition.data.unrealised_pnl)
-        let shortHighestSinceX = this.getHighestSinceX(assetInfo.shortPercentageHistory, shortPosition.data.unrealised_pnl)
+        let longHighestSinceX = this.getHighestSinceX(assetInfo.longHistory, longPosition.data.unrealised_pnl)
+        let shortHighestSinceX = this.getHighestSinceX(assetInfo.shortHistory, shortPosition.data.unrealised_pnl)
 
         console.log(`longLowestSinceX: ${longLowestSinceX}`)
         console.log(`shortLowestSinceX: ${shortLowestSinceX}`)
@@ -174,14 +238,14 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             this.addInvestmentAdvice(Action.SELL, assetInfo.minTradingAmount, assetInfo.pair, reason)
         }
 
-        if (longHighestSinceX >= 1000) {
+        if (longHighestSinceX >= this.historyLength - 1) {
 
             const reason = `we reduce our ${assetInfo.pair} long position (longHighestSinceX: ${longHighestSinceX} - (${longPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.REDUCELONG, assetInfo.minTradingAmount, assetInfo.pair, reason)
 
         }
 
-        if (shortHighestSinceX >= 1000) {
+        if (shortHighestSinceX >= this.historyLength - 1) {
 
             const reason = `we reduce our ${assetInfo.pair} short position (shortHighestSinceX: ${shortHighestSinceX} - (${shortPosition.data.unrealised_pnl})) by ${assetInfo.minTradingAmount}`
             this.addInvestmentAdvice(Action.REDUCESHORT, assetInfo.minTradingAmount, assetInfo.pair, reason)
@@ -282,56 +346,56 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected getAssetsToPlayWith(): AssetInfo[] {
         return [
-            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 20, minLSD: 0, maxLSD: 40, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 20, minLSD: 0, maxLSD: 40, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 10, minLSD: 0, maxLSD: 30, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: 0, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 10, minLSD: 0, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "AAVEUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 10, minLSD: 0, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: -2, maxLSD: 20, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ADAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "DOTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "BITUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
-            { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longPercentageHistory: [], shortPercentageHistory: [], },
+            { pair: "ETHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 20, minLSD: 0, maxLSD: 40, longHistory: [], shortHistory: [], },
+            { pair: "ENSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 20, minLSD: 0, maxLSD: 40, longHistory: [], shortHistory: [], },
+            { pair: "BTCUSDT", minTradingAmount: 0.001, decimalPlaces: 3, targetLSD: 10, minLSD: 0, maxLSD: 30, longHistory: [], shortHistory: [], },
+            { pair: "UNIUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: 0, maxLSD: 20, longHistory: [], shortHistory: [], },
+            { pair: "LINKUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 10, minLSD: 0, maxLSD: 20, longHistory: [], shortHistory: [], },
+            { pair: "AAVEUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 10, minLSD: 0, maxLSD: 20, longHistory: [], shortHistory: [], },
+            { pair: "COMPUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 10, minLSD: -2, maxLSD: 20, longHistory: [], shortHistory: [], },
+            { pair: "BNBUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "SOLUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ADAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "DOTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "LUNAUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "BATUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "FILUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "XLMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "MANAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ICPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "BCHUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "BITUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "CRVUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ENJUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "GALAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "FTMUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "AXSUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "GRTUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "IOTXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ALGOUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "LRCUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "KSMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ZECUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "XTZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "ONEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "RUNEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "CHZUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "DOGEUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "XRPUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "EOSUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: -2, minLSD: -6, maxLSD: 5, longHistory: [], shortHistory: [], },
 
         ]
     }
