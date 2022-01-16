@@ -16,7 +16,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected overallLSD: number = 0
     protected overallPNL: number = 0
-    protected triggerForUltimateProfitTaking: number = 0.7 // 0.1
+    protected triggerForUltimateProfitTaking: number = 1 // 0.1
     protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
     protected historyLength = 1000
