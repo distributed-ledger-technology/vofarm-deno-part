@@ -16,7 +16,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     protected overallLSD: number = 0
     protected overallPNL: number = 0
-    protected triggerForUltimateProfitTaking: number = 2 // 0.1
+    protected triggerForUltimateProfitTaking: number = 1 // 0.1
     protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
     protected historyLength = 1000
@@ -163,9 +163,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
     protected sellMostSuccessfulAvailableAsset() {
-        console.log(`irgendwas`)
         const mostSuccessfulAvailableAsset = this.getMostSuccessfulAvailableAsset()
-        console.log(JSON.stringify(mostSuccessfulAvailableAsset))
         if (mostSuccessfulAvailableAsset.side === 'Buy') {
             const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} long position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
             this.addInvestmentAdvice(Action.REDUCELONG, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
@@ -175,7 +173,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         if (mostSuccessfulAvailableAsset.side === 'Sell') {
             const reason = `we reduce our ${mostSuccessfulAvailableAsset.symbol} short position (percentage: ${mostSuccessfulAvailableAsset.percentage} by ${mostSuccessfulAvailableAsset.minTradingAmount}`
             this.addInvestmentAdvice(Action.REDUCESHORT, mostSuccessfulAvailableAsset.minTradingAmount, mostSuccessfulAvailableAsset.symbol, reason)
-
         }
 
     }
