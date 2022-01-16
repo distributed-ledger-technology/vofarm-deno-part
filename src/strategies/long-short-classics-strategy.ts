@@ -36,6 +36,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     public async getInvestmentAdvices(input: any): Promise<InvestmentAdvice[]> {
 
         this.currentInvestmentAdvices = []
+        this.mostSuccessfulAvailableAsset = {
+            symbol: "",
+            side: "",
+            percentage: 0,
+            minTradingAmount: 0,
+        }
 
         if (input.fundamentals === undefined) {
             await this.collectFundamentals(input.exchangeConnector)
