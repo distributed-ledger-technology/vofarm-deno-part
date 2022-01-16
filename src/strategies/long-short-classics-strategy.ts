@@ -187,8 +187,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         for (const position of this.fundamentals.positions) {
 
-            console.log(`${position.data.size} ${position.data.side}`)
-
             const assetInfoForPosition = this.assetInfos.filter((e: AssetInfo) => e.pair === position.data.symbol)[0]
             if (assetInfoForPosition === undefined) continue
 
