@@ -5,7 +5,7 @@ import { VFLogger } from "../utilities/logger.ts";
 
 import { VoFarmStrategy } from "./vofarm-strategy.ts";
 
-export interface MostSuccessfulAsset {
+export interface AssetUnderPlay {
     symbol: string,
     side: string
     percentage: number,
@@ -20,12 +20,19 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     protected generalClosingTrigger: number = 100
     protected assetInfos: AssetInfo[]
     protected historyLength = 1000
-    protected mostSuccessfulAvailableAsset: MostSuccessfulAsset
+    protected mostSuccessfulAvailableAsset: AssetUnderPlay
+    protected leastSuccessfulAssetOnUnderRepresentedSide: AssetUnderPlay
 
     public constructor(logger: VFLogger) {
         super(logger)
         this.assetInfos = this.getAssetsToPlayWith()
         this.mostSuccessfulAvailableAsset = {
+            symbol: "",
+            side: "",
+            percentage: 0,
+            minTradingAmount: 0,
+        }
+        this.leastSuccessfulAssetOnUnderRepresentedSide = {
             symbol: "",
             side: "",
             percentage: 0,
@@ -68,8 +75,12 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         }
 
-        if (this.liquidityLevel < this.triggerForUltimateProfitTaking) {
+        if (this.liquidityLevel < this.triggerForUltimateProfitTaking && this.leastSuccessfulAssetOnUnderRepresentedSide.symbol !== "") {
             this.sellMostSuccessfulAvailableAsset()
+        }
+
+        if (this.liquidityLevel > 0.15 && this.leastSuccessfulAssetOnUnderRepresentedSide.symbol !== "") {
+            this.addToLeastSuccessfulAssetOnUnderRepresentedSide()
         }
 
         return this.currentInvestmentAdvices
@@ -106,11 +117,16 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             assetInfo.shortHistory.splice(assetInfo.shortHistory.length - 1, 1)
         }
 
+        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
+
         if (this.mostSuccessfulAvailableAsset.symbol === "") {
             this.setMostSuccessfulAvailableAsset()
         }
 
-        let longShortDeltaInPercent = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, assetInfo.pair)
+        if (this.leastSuccessfulAssetOnUnderRepresentedSide.symbol === "") {
+            this.setLeastSuccessfulAssetOnUnderRepresentedSide(longShortDeltaInPercent)
+        }
+
 
         if (longPosition !== undefined && shortPosition !== undefined && (longPosition.data.leverage < 25 || shortPosition.data.leverage < 25)) {
             await exchangeConnector.setLeverage(assetInfo.pair, 25)
@@ -196,6 +212,21 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     }
 
+    protected addToLeastSuccessfulAssetOnUnderRepresentedSide() {
+
+        if (this.leastSuccessfulAssetOnUnderRepresentedSide.side === 'Buy') {
+            const reason = `we add ${this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount} to ${this.leastSuccessfulAssetOnUnderRepresentedSide.symbol} long position (percentage: ${this.leastSuccessfulAssetOnUnderRepresentedSide.percentage}`
+            this.addInvestmentAdvice(Action.BUY, this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount, this.leastSuccessfulAssetOnUnderRepresentedSide.symbol, reason)
+
+        }
+
+        if (this.leastSuccessfulAssetOnUnderRepresentedSide.side === 'Sell') {
+            const reason = `we add ${this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount} to ${this.leastSuccessfulAssetOnUnderRepresentedSide.symbol} short position (percentage: ${this.leastSuccessfulAssetOnUnderRepresentedSide.percentage}`
+            this.addInvestmentAdvice(Action.SELL, this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount, this.leastSuccessfulAssetOnUnderRepresentedSide.symbol, reason)
+        }
+
+    }
+
     protected setMostSuccessfulAvailableAsset(): void {
 
         for (const position of this.fundamentals.positions) {
@@ -215,6 +246,32 @@ export abstract class LongShortClassics extends VoFarmStrategy {
                 }
 
             }
+        }
+
+
+    }
+
+    protected setLeastSuccessfulAssetOnUnderRepresentedSide(lsd: number): void {
+
+        for (const position of this.fundamentals.positions) {
+
+            const assetInfoForPosition = this.assetInfos.filter((e: AssetInfo) => e.pair === position.data.symbol)[0]
+            if (assetInfoForPosition === undefined) continue
+
+            const minTradingAmount = assetInfoForPosition.minTradingAmount
+
+            const pNLInPercent = FinancialCalculator.getPNLOfPositionInPercent(position)
+
+            if (pNLInPercent < this.leastSuccessfulAssetOnUnderRepresentedSide.percentage && Math.abs(lsd) < 70 &&
+                (this.overallLSD > 0 && position.data.side === 'Sell') ||
+                (this.overallLSD < 0 && position.data.side === 'Buy')) {
+                this.leastSuccessfulAssetOnUnderRepresentedSide.percentage = pNLInPercent
+                this.leastSuccessfulAssetOnUnderRepresentedSide.symbol = position.data.symbol
+                this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount = minTradingAmount
+                this.leastSuccessfulAssetOnUnderRepresentedSide.side = position.data.side
+            }
+
+
         }
 
 
