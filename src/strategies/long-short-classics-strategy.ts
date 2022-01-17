@@ -131,7 +131,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         if (this.leastSuccessfulAssetOnUnderRepresentedSide.symbol === "") {
-            this.setLeastSuccessfulAssetOnUnderRepresentedSide(longShortDeltaInPercent)
+            this.setLeastSuccessfulAssetOnUnderRepresentedSide()
         }
 
 
@@ -258,7 +258,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
     }
 
-    protected setLeastSuccessfulAssetOnUnderRepresentedSide(lsd: number): void {
+    protected setLeastSuccessfulAssetOnUnderRepresentedSide(): void {
 
         for (const position of this.fundamentals.positions) {
 
@@ -268,6 +268,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             const minTradingAmount = assetInfoForPosition.minTradingAmount
 
             const pNLInPercent = FinancialCalculator.getPNLOfPositionInPercent(position)
+
+            let lsd = FinancialCalculator.getLongShortDeltaInPercent(this.fundamentals.positions, position.data.symbol)
 
             if (pNLInPercent < this.leastSuccessfulAssetOnUnderRepresentedSide.percentage && Math.abs(lsd) < 70 &&
                 ((this.overallLSD > 0 && position.data.side === 'Sell') ||
