@@ -270,8 +270,8 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             const pNLInPercent = FinancialCalculator.getPNLOfPositionInPercent(position)
 
             if (pNLInPercent < this.leastSuccessfulAssetOnUnderRepresentedSide.percentage && Math.abs(lsd) < 70 &&
-                (this.overallLSD > 0 && position.data.side === 'Sell') ||
-                (this.overallLSD < 0 && position.data.side === 'Buy')) {
+                ((this.overallLSD > 0 && position.data.side === 'Sell') ||
+                    (this.overallLSD < 0 && position.data.side === 'Buy'))) {
                 this.leastSuccessfulAssetOnUnderRepresentedSide.percentage = pNLInPercent
                 this.leastSuccessfulAssetOnUnderRepresentedSide.symbol = position.data.symbol
                 this.leastSuccessfulAssetOnUnderRepresentedSide.minTradingAmount = minTradingAmount
