@@ -66,8 +66,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
 
         this.liquidityLevel = (this.fundamentals.accountInfo.result.USDT.available_balance / this.fundamentals.accountInfo.result.USDT.equity) * 20
 
-        this.setGeneralClosingTrigger()
-
         this.overallLSD = this.getOverallLSD()
 
         this.logger.log(`overallLSD: ${this.overallLSD.toFixed(2)}`, 1)
@@ -91,18 +89,6 @@ export abstract class LongShortClassics extends VoFarmStrategy {
         }
 
         return this.currentInvestmentAdvices
-
-    }
-
-    protected setGeneralClosingTrigger(): void {
-        if (this.liquidityLevel < 0.1) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 1
-            if (this.generalClosingTrigger < 10) {
-                this.generalClosingTrigger = 30
-            }
-        } else {
-            this.generalClosingTrigger = 100
-        }
 
     }
 
