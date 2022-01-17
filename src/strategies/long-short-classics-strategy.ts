@@ -50,6 +50,13 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             minTradingAmount: 0,
         }
 
+        this.leastSuccessfulAssetOnUnderRepresentedSide = {
+            symbol: "",
+            side: "",
+            percentage: 0,
+            minTradingAmount: 0,
+        }
+
         if (input.fundamentals === undefined) {
             await this.collectFundamentals(input.exchangeConnector)
         } else {
