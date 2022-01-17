@@ -95,13 +95,15 @@ export abstract class LongShortClassics extends VoFarmStrategy {
     }
 
     protected setGeneralClosingTrigger(): void {
-        if (this.liquidityLevel < 0.01) {
-            this.generalClosingTrigger = this.generalClosingTrigger - 10
-        } else if (this.liquidityLevel < 0.1 && this.generalClosingTrigger > 24) {
+        if (this.liquidityLevel < 0.1) {
             this.generalClosingTrigger = this.generalClosingTrigger - 1
+            if (this.generalClosingTrigger < 10) {
+                this.generalClosingTrigger = 30
+            }
         } else {
             this.generalClosingTrigger = 100
         }
+
     }
 
     protected async playAsset(assetInfo: AssetInfo, exchangeConnector: IExchangeConnector): Promise<void> {
@@ -426,7 +428,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             { pair: "VETUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "THETAUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "ETCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
-            { pair: "HBARUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "HBARUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "EGLDUSDT", minTradingAmount: 0.01, decimalPlaces: 2, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "ATOMUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "TRXUSDT", minTradingAmount: 10, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
