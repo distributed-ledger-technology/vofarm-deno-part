@@ -422,7 +422,7 @@ export abstract class LongShortClassics extends VoFarmStrategy {
             { pair: "MATICUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "LTCUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "SANDUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
-            { pair: "BITUSDT", minTradingAmount: 0.1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
+            { pair: "BITUSDT", minTradingAmount: 1, decimalPlaces: 1, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "DYDXUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "FLOWUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
             { pair: "SUSHIUSDT", minTradingAmount: 1, decimalPlaces: 0, targetLSD: 0, minLSD: -2, maxLSD: 5, longHistory: [], shortHistory: [], },
